@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrandPilot V2.0 — 可溯源版</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'PingFang SC','SF Pro Text',-apple-system,sans-serif;font-size:13px;background:#F7F6F2;color:#1C1C1E;}
+.shell{max-width:1200px;margin:0 auto;padding:24px 28px 48px;}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 0 20px;border-bottom:1px solid #E8E5DE;margin-bottom:24px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:34px;height:34px;background:#1D9E75;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;}
+.brand-name{font-size:15px;font-weight:600;}
+.brand-sub{font-size:11px;color:#8A8A8E;margin-top:1px;}
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #E0DDD6;background:#fff;color:#8A8A8E;}
+.src-tag{font-size:10px;padding:2px 7px;border-radius:3px;background:#EFF6FF;color:#1D4ED8;border:0.5px solid #BFDBFE;font-weight:500;}
+.src-tag.calc{background:#F0FDF4;color:#166534;border-color:#BBF7D0;}
+.tabs{display:flex;border-bottom:1px solid #E8E5DE;margin-bottom:28px;}
+.tb{display:flex;align-items:center;gap:7px;padding:10px 20px;font-size:13px;font-weight:500;color:#8A8A8E;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;user-select:none;}
+.tb:hover{color:#1C1C1E;}
+.tb.on{color:#1D9E75;border-bottom-color:#1D9E75;font-weight:600;}
+.tb i{font-size:15px;}
+.tab-panel{display:none;}
+.tab-panel.on{display:block;}
+.section{background:#fff;border:0.5px solid #E8E5DE;border-radius:16px;padding:24px 28px;margin-bottom:16px;}
+.section-sm{background:#fff;border:0.5px solid #E8E5DE;border-radius:16px;padding:20px 24px;margin-bottom:16px;}
+.sec-label{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.sec-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sec-title{font-size:13px;font-weight:600;}
+.sec-sub{font-size:11px;color:#8A8A8E;}
+.sec-fill{flex:1;}
+.sec-badge{font-size:10px;padding:3px 9px;border-radius:20px;background:#E6F5F0;color:#085041;font-weight:500;}
+.kpi-row{display:grid;gap:1px;background:#E8E5DE;border:0.5px solid #E8E5DE;border-radius:14px;overflow:hidden;}
+.kpi-6{grid-template-columns:repeat(6,1fr);}
+.kpi-5{grid-template-columns:repeat(5,1fr);}
+.kpi-4{grid-template-columns:repeat(4,1fr);}
+.kpi-3{grid-template-columns:repeat(3,1fr);}
+.kpi-cell{background:#fff;padding:16px 18px;}
+.kpi-lbl{font-size:11px;color:#8A8A8E;margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.kpi-val{font-size:21px;font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.15;}
+.kpi-val.g{color:#0F6E56;}
+.kpi-val.a{color:#854F0B;}
+.kpi-val.p{color:#534AB7;}
+.kpi-val.r{color:#A32D2D;}
+.kpi-sub{font-size:10px;color:#B0ADAA;margin-top:3px;}
+.kpi-note{font-size:10px;margin-top:4px;padding:2px 6px;border-radius:3px;display:inline-block;}
+.kpi-note.g{background:#E6F5F0;color:#085041;}
+.kpi-note.r{background:#FDEAEA;color:#A32D2D;}
+.kpi-note.a{background:#FEF3D9;color:#633806;}
+.cc{background:#FAFAF8;border:0.5px solid #EFEDE8;border-radius:12px;padding:18px 20px;}
+.cc-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.cc-t{font-size:12px;font-weight:600;}
+.cc-s{font-size:11px;color:#B0ADAA;margin-top:2px;}
+.cc-badge{font-size:10px;padding:3px 8px;border-radius:20px;background:#E6F5F0;color:#085041;white-space:nowrap;}
+.cc-src{font-size:10px;color:#8A8A8E;margin-top:3px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g32{display:grid;grid-template-columns:3fr 2fr;gap:12px;}
+.mb14{margin-bottom:14px;}
+/* TIMELINE */
+.tl-track{display:flex;align-items:flex-start;position:relative;}
+.tl-track::before{content:'';position:absolute;top:18px;left:18px;right:18px;height:1px;background:#E8E5DE;z-index:0;}
+.tl-item{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;z-index:1;}
+.tl-dot{width:36px;height:36px;border-radius:50%;border:1.5px solid #E0DDD6;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;}
+.tl-item.done .tl-dot{border-color:#1D9E75;background:#E6F5F0;}
+.tl-item:hover .tl-dot,.tl-item.cur .tl-dot{border-color:#1D9E75;background:#E6F5F0;box-shadow:0 0 0 4px rgba(29,158,117,.1);}
+.tl-body{text-align:center;padding:8px 4px 0;max-width:112px;}
+.tl-stage{font-size:12px;font-weight:600;margin-bottom:2px;}
+.tl-time{font-size:10px;color:#BA7517;font-weight:500;margin-bottom:2px;}
+.tl-budget{font-size:11px;color:#1D9E75;font-weight:600;margin-bottom:2px;}
+.tl-tgt{font-size:10px;color:#B0ADAA;line-height:1.4;}
+.tl-expand{background:#F7F6F2;border:0.5px solid #E8E5DE;border-radius:10px;padding:14px 16px;margin-top:14px;display:none;}
+.tl-expand.show{display:block;}
+.exp-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px;}
+.exp-lbl{font-size:10px;color:#8A8A8E;margin-bottom:2px;}
+.exp-val{font-size:12px;font-weight:600;}
+.tasks-wrap{padding-top:10px;border-top:0.5px solid #E8E5DE;}
+.tasks-lbl{font-size:10px;font-weight:600;color:#8A8A8E;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.task-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.task-tag{font-size:11px;background:#fff;border:0.5px solid #E8E5DE;padding:3px 8px;border-radius:4px;color:#8A8A8E;}
+/* SCENARIO */
+.sc-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.sc-card{background:#FAFAF8;border:0.5px solid #EFEDE8;border-radius:12px;padding:18px;}
+.sc-card.feat{border:1.5px solid #1D9E75;background:#F5FBF8;}
+.sc-bdg{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:12px;}
+.sc-bdg.std{background:#E6F5F0;color:#085041;}
+.sc-m{margin-bottom:8px;}
+.sc-ml{font-size:11px;color:#8A8A8E;margin-bottom:2px;}
+.sc-mv{font-size:18px;font-weight:600;letter-spacing:-.5px;}
+.sc-mv.g{color:#0F6E56;}
+/* SIMULATOR */
+.sim-wrap{display:grid;grid-template-columns:270px 1fr;gap:16px;align-items:start;}
+.sim-ctrl{background:#F7F6F2;border:0.5px solid #E8E5DE;border-radius:10px;padding:16px 18px;}
+.sim-t{font-size:12px;font-weight:600;margin-bottom:12px;}
+.sim-row{margin-bottom:11px;}
+.sim-lbl{display:flex;justify-content:space-between;font-size:11px;color:#8A8A8E;margin-bottom:5px;}
+.sim-v{font-weight:600;}
+.sim-res{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;padding-top:12px;border-top:0.5px solid #E8E5DE;}
+.sim-ri{background:#fff;border-radius:8px;padding:10px 12px;border:0.5px solid #EFEDE8;}
+.sim-rl{font-size:10px;color:#8A8A8E;margin-bottom:2px;}
+.sim-rv{font-size:16px;font-weight:600;}
+.sim-rv.g{color:#0F6E56;}
+.sim-rv.a{color:#854F0B;}
+.sim-rv.r{color:#A32D2D;}
+/* TABLE */
+.col-tog{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:#8A8A8E;padding:10px 0;border-top:0.5px solid #EFEDE8;margin-top:8px;user-select:none;}
+.col-tog:hover{color:#1C1C1E;}
+.col-body{display:none;}
+.col-body.open{display:block;}
+.dtbl{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px;}
+.dtbl th{background:#F7F6F2;color:#8A8A8E;font-weight:500;padding:7px 10px;text-align:left;border-bottom:0.5px solid #E8E5DE;font-size:10px;text-transform:uppercase;}
+.dtbl td{padding:8px 10px;border-bottom:0.5px solid #F0EDE8;color:#8A8A8E;}
+.dtbl tr:hover td{background:#FAFAF8;}
+.dtbl td.num{color:#1C1C1E;font-weight:500;}
+.dtbl td.g{color:#0F6E56;font-weight:600;}
+/* WATERFALL LEGEND */
+.wfl{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;}
+.wfli{display:flex;align-items:center;gap:5px;font-size:11px;color:#8A8A8E;}
+.wfld{width:8px;height:8px;border-radius:2px;}
+/* NOTICE BOX */
+.notice{background:#FFFBEB;border:0.5px solid #FDE68A;border-radius:8px;padding:10px 14px;font-size:11px;color:#92400E;margin-top:10px;display:flex;align-items:flex-start;gap:7px;}
+.notice i{font-size:14px;flex-shrink:0;margin-top:1px;}
+
+.pj-tab{padding:8px 18px;font-size:12px;font-weight:500;color:#8A8A8E;cursor:pointer;border:none;background:transparent;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:all .15s;user-select:none;white-space:nowrap;}
+.pj-tab:hover{color:#378ADD;}
+.pj-tab.on{color:#378ADD;border-bottom-color:#378ADD;font-weight:600;}
+.pj-mini{font-size:10px;padding:2px 7px;border-radius:4px;white-space:nowrap;display:inline-block;}
+
+/* ── 产品渠道卡片 ── */
+.prod-chan-card{background:#fff;border:0.5px solid #E8E5DE;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
+.pcc-header{padding:16px 18px;border-bottom:1px solid #E8E5DE;}
+.pcc-kpi{background:rgba(255,255,255,.7);border-radius:8px;padding:8px 10px;}
+.pcc-kpi-lbl{font-size:10px;color:#8A8A8E;margin-bottom:3px;}
+.pcc-kpi-val{font-size:18px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.2;}
+.pcc-body{padding:14px 16px;flex:1;}
+.pcc-section-lbl{font-size:10px;font-weight:600;color:#8A8A8E;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;padding-bottom:6px;border-bottom:0.5px solid #EFEDE8;}
+/* 每行固定高度+对齐 */
+.pcc-row{display:grid;grid-template-columns:90px 1fr 42px 32px;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid #F7F6F2;font-size:11px;color:#555;}
+.pcc-row:last-child{border-bottom:none;}
+.pcc-row-group{padding-left:10px;color:#8A8A8E;font-size:10.5px;}
+.pcc-row-plat{background:#FFF8F8;margin:2px -16px;padding:5px 16px;}
+.pcc-bar-wrap{height:5px;background:#F1F0EE;border-radius:3px;overflow:hidden;}
+.pcc-bar{height:100%;border-radius:3px;transition:width .3s;}
+.pcc-amt{font-size:11px;font-weight:500;color:#1C1C1E;text-align:right;font-variant-numeric:tabular-nums;}
+.pcc-pct{font-size:10px;color:#B0ADAA;text-align:right;}
+.pcc-total{background:#F7F6F2;margin:6px -16px 0;padding:7px 16px;display:grid;grid-template-columns:90px 1fr 42px 32px;align-items:center;gap:8px;font-size:11px;}
+.pcc-profit{display:flex;align-items:center;gap:8px;margin:10px -16px -14px;padding:11px 16px;border-top:1.5px solid #E8E5DE;background:#FAFAF8;}
+
+/* ── 路线图图标（替换emoji tl-dot）── */
+.tl-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin:0 auto 8px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.tl-item.cur .tl-icon{box-shadow:0 3px 12px rgba(0,0,0,.2);transform:scale(1.08);}
+/* 月度节点数字图标 */
+.tl-item .tl-icon{font-size:14px;font-weight:700;}
+
+/* ── 路线图任务列表 ── */
+.tl-task-row{display:flex;gap:8px;padding:5px 0;border-bottom:0.5px solid #F0EDE8;align-items:baseline;line-height:1.5;}
+.tl-task-row:last-child{border-bottom:none;}
+.tl-task-label{font-size:11px;font-weight:600;color:#1C1C1E;white-space:nowrap;flex-shrink:0;min-width:80px;}
+.tl-task-detail{font-size:11px;color:#555;flex:1;}
+/* task-tags 容器改为列表布局 */
+#tl-xt{display:flex;flex-direction:column;gap:0;}
+
+/* ── 任务列表单列全宽覆盖 ── */
+#tl-xt, #mo-xt { display:flex !important; flex-direction:column !important; gap:0 !important; width:100% !important; }
+.tasks-wrap { width:100% !important; }
+.tl-task-label { min-width:90px !important; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="hdr">
+  <div class="brand">
+    <div class="brand-icon">BP</div>
+    <div>
+      <div class="brand-name">BrandPilot V2.0</div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tb on" onclick="sw('fw',this)"><i class="ti ti-layout-dashboard"></i>全案框架</button>
+  <button class="tb" onclick="sw('prod',this)"><i class="ti ti-package"></i>产品财务演算</button>
+  <button class="tb" onclick="sw('proj',this)"><i class="ti ti-report-money"></i>项目财务演算</button>
+  <button class="tb" onclick="sw('prep',this)"><i class="ti ti-tools"></i>准备阶段</button>
+  <button class="tb" onclick="sw('p01',this)"><i class="ti ti-chart-line"></i>0-1阶段</button>
+  <button class="tb" onclick="sw('fang',this)"><i class="ti ti-trending-up"></i>放量阶段</button>
+  <button class="tb" onclick="sw('grow',this)"><i class="ti ti-rocket"></i>增长阶段</button>
+  <button class="tb" onclick="sw('profit',this)"><i class="ti ti-currency-dollar"></i>盈利阶段</button>
+</div>
+
+<!-- ═══ TAB1: 全案框架 ═══ -->
+<div id="tab-fw" class="tab-panel on">
+
+  <!-- 核心投资指标 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#1D9E75"></div>
+      <span class="sec-title">核心投资指标</span>
+      </div>
+    <div class="kpi-row kpi-5">
+      <div class="kpi-cell">
+        <div class="kpi-lbl">总投入预算</div>
+        <div class="kpi-val">$334.6万</div>
+        <div class="kpi-sub">5阶段预算合计</div>
+        </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">目标总销售额</div>
+        <div class="kpi-val a">$1,030万</div>
+        <div class="kpi-sub">各阶段目标GMV合计</div>
+        </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">综合 ROI</div>
+        <div class="kpi-val p">3.08×</div>
+        <div class="kpi-sub">总GMV ÷ 总预算</div>
+        </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">项目周期</div>
+        <div class="kpi-val">16.5个月</div>
+        <div class="kpi-sub">含准备阶段1.5个月</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">0-1阶段回本月</div>
+        <div class="kpi-val g">第4月</div>
+        <div class="kpi-sub">月度GMV首次超月度投入</div>
+        </div>
+    </div>
+  </div>
+
+  <!-- 品牌增长路线图（整行） -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#BA7517"></div>
+      <span class="sec-title">品牌增长路线图</span>
+      <div class="sec-fill"></div>
+      <span class="sec-badge">5阶段 · 16.5个月</span>
+    </div>
+    <div class="tl-track">
+      <div class="tl-item done" onclick="xtl(0)">
+        <div class="tl-icon" style="background:#E8E5DE;color:#8A8A8E">🔧</div>
+        <div class="tl-body"><div class="tl-stage">准备阶段</div></div>
+      </div>
+      <div class="tl-item cur" onclick="xtl(1)">
+        <div class="tl-icon" style="background:#1D9E75;color:#fff">🚀</div>
+        <div class="tl-body"><div class="tl-stage">0-1阶段</div></div>
+      </div>
+      <div class="tl-item" onclick="xtl(2)">
+        <div class="tl-icon" style="background:#BA7517;color:#fff">📈</div>
+        <div class="tl-body"><div class="tl-stage">放量阶段</div></div>
+      </div>
+      <div class="tl-item" onclick="xtl(3)">
+        <div class="tl-icon" style="background:#7F77DD;color:#fff">⚡</div>
+        <div class="tl-body"><div class="tl-stage">增长阶段</div></div>
+      </div>
+      <div class="tl-item" onclick="xtl(4)">
+        <div class="tl-icon" style="background:#378ADD;color:#fff">💰</div>
+        <div class="tl-body"><div class="tl-stage">盈利阶段</div></div>
+      </div>
+    </div>
+    <!-- 展开区 -->
+    <div class="tl-expand" id="tl-x">
+      <div class="exp-row" id="tl-xd"></div>
+      <div class="tasks-wrap">
+        <div class="tasks-lbl">核心任务</div>
+        <div class="task-tags" id="tl-xt"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 各阶段GMV目标 + ROI趋势 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#7F77DD"></div>
+      <span class="sec-title">阶段 GMV 目标 vs ROI 目标</span>
+      
+    </div>
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">各阶段 GMV 目标</div></div></div>
+        <div id="c-fw-gmv" style="height:220px"></div>
+      </div>
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">各阶段 ROI 目标</div></div></div>
+        <div id="c-fw-roi" style="height:220px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 各阶段预算对比 + 预算Donut 并排 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#378ADD"></div>
+      <span class="sec-title">各阶段预算 vs GMV 目标对比</span>
+      
+    </div>
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">预算 vs GMV目标（万美元）</div></div></div>
+        <div id="c-fw-compare" style="height:240px"></div>
+      </div>
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">阶段预算分布</div></div><span class="cc-badge" style="background:#1D9E75;color:#fff">$334.6万</span></div>
+        <div id="c-fw-donut" style="height:240px"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══ TAB2: 0-1阶段拆解 ═══ -->
+<div id="tab-p01" class="tab-panel">
+
+  <!-- 核心指标 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#1D9E75"></div>
+      <span class="sec-title">0-1阶段核心指标</span>
+    </div>
+    <div class="kpi-row kpi-5">
+      <div class="kpi-cell">
+        <div class="kpi-lbl">阶段总预算</div>
+        <div class="kpi-val">$87.9万</div>
+        
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">GMV 目标</div>
+        <div class="kpi-val a">$150万+</div>
+        
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">ROI 目标</div>
+        <div class="kpi-val p">3.00</div>
+        
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">模型目标</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+          <span class="task-tag" style="background:#E6F5F0;border-color:#A3E4C8;color:#085041;font-size:10px">达人合作模型</span>
+          <span class="task-tag" style="background:#EFEEFD;border-color:#C4B5FD;color:#3C3489;font-size:10px">广告模型</span>
+          <span class="task-tag" style="background:#EFF6FF;border-color:#BFDBFE;color:#1D4ED8;font-size:10px">内容转化模型</span>
+        </div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">盈亏目标</div>
+        <div class="kpi-val g" style="font-size:17px;margin-top:6px">第5月开始盈利</div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- 0-1阶段拆解：月度路线图 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#BA7517"></div>
+      <span class="sec-title">0-1阶段拆解</span>
+      
+      <div class="sec-fill"></div>
+      <span class="sec-badge">6个月</span>
+    </div>
+    <!-- 月度路线图节点 -->
+    <div class="tl-track" id="mo-track">
+      <div class="tl-item cur" onclick="swMo(0,this)">
+        <div class="tl-icon" style="background:#E24B4A;color:#fff">1</div>
+        <div class="tl-body"><div class="tl-stage">第1月</div></div>
+      </div>
+      <div class="tl-item" onclick="swMo(1,this)">
+        <div class="tl-icon" style="background:#E8E5DE;color:#555">2</div>
+        <div class="tl-body"><div class="tl-stage">第2月</div></div>
+      </div>
+      <div class="tl-item" onclick="swMo(2,this)">
+        <div class="tl-icon" style="background:#E8E5DE;color:#555">3</div>
+        <div class="tl-body"><div class="tl-stage">第3月</div></div>
+      </div>
+      <div class="tl-item" onclick="swMo(3,this)">
+        <div class="tl-icon" style="background:#E8E5DE;color:#555">4</div>
+        <div class="tl-body"><div class="tl-stage">第4月</div></div>
+      </div>
+      <div class="tl-item" onclick="swMo(4,this)">
+        <div class="tl-icon" style="background:#E8E5DE;color:#555">5</div>
+        <div class="tl-body"><div class="tl-stage">第5月</div></div>
+      </div>
+      <div class="tl-item" onclick="swMo(5,this)">
+        <div class="tl-icon" style="background:#E8E5DE;color:#555">6</div>
+        <div class="tl-body"><div class="tl-stage">第6月</div></div>
+      </div>
+    </div>
+    <!-- 月度展开区 -->
+    <div class="tl-expand show" id="mo-expand">
+      <div class="exp-row" id="mo-xd"></div>
+      <div class="tasks-wrap">
+        <div class="tasks-lbl">核心任务</div>
+        <div class="task-tags" id="mo-xt"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 预算结构 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#BA7517"></div>
+      <span class="sec-title">预算结构</span>
+      
+    </div>
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">预算构成分布</div></div></div>
+        <div id="c-p01-bud" style="height:250px"></div>
+        </div>
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">月度 GMV 增长曲线</div></div></div>
+        <div id="c-p01-gmv" style="height:250px"></div>
+        </div>
+    </div>
+  </div>
+
+  <!-- 广告投入·月度趋势 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#7F77DD"></div>
+      <span class="sec-title">广告投入 · 月度趋势</span>
+      
+    </div>
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">广告月度投入趋势</div></div></div>
+        <div id="c-p01-ads" style="height:230px"></div>
+      </div>
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">月度 GMV vs 总成本</div></div></div>
+        <div id="c-p01-cf" style="height:230px"></div>
+        </div>
+    </div>
+  </div>
+
+  <!-- 达人资源配置 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#378ADD"></div>
+      <span class="sec-title">达人资源配置</span>
+      
+    </div>
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">月度达人数量结构</div><div class="cc-s">种草达人+付费带货+纯佣达人</div></div></div>
+        <div id="c-p01-kol-num" style="height:230px"></div>
+        </div>
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">达人费用结构占比</div></div></div>
+        <div id="c-p01-kol-fee" style="height:230px"></div>
+        </div>
+    </div>
+  </div>
+
+
+</div>
+
+
+<!-- ═══ TAB3: 产品财务演算 ═══ -->
+<div id="tab-prod" class="tab-panel">
+
+  <!-- 产品信息头 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#1D9E75"></div>
+      <span class="sec-title">单品财务模型 · 分渠道独立核算</span>
+      
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;background:#F7F6F2;border-radius:10px;padding:12px 18px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">📦</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1C1C1E">「伴饮」智能语音水杯</div>
+          
+        </div>
+      </div>
+      <div style="flex:1"></div>
+      
+    </div>
+  </div>
+
+  <!-- 三渠道并排卡片 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">
+
+    <!-- TikTok Shop -->
+    <div class="prod-chan-card" id="prod-tk">
+      <div class="pcc-header" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border-bottom-color:#6EE7B7">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:18px">🎵</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1C1C1E">TikTok Shop</div>
+            <div style="font-size:10px;color:#6EE7B7;margin-top:1px">平台抽佣6% + 达人抽佣6%</div>
+          </div>
+        </div>
+        <!-- 核心指标 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">售价</div>
+            <div class="pcc-kpi-val" style="color:#1C1C1E">$79.9</div>
+          </div>
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">毛利润</div>
+            <div class="pcc-kpi-val" style="color:#059669;font-size:22px">$38.82</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">毛利率</div>
+            <div class="pcc-kpi-val" style="color:#059669">48.6%</div>
+          </div>
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">盈亏平衡ROI</div>
+            <div class="pcc-kpi-val" style="color:#D97706">1.95×</div>
+          </div>
+        </div>
+      </div>
+      <!-- 成本明细 -->
+      <div class="pcc-body">
+        <div class="pcc-section-lbl">成本明细（共 $41.08/件）</div>
+        <div class="pcc-row"><span>货品成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:18.8%;background:#94A3B8"></div></div><span class="pcc-amt">$15.0</span><span class="pcc-pct">18.8%</span></div>
+        <div class="pcc-row"><span>包装成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.1%;background:#94A3B8"></div></div><span class="pcc-amt">$2.5</span><span class="pcc-pct">3.1%</span></div>
+        <div class="pcc-row pcc-row-group"><span>头程海运</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.8%;background:#CBD5E1"></div></div><span class="pcc-amt">$3.0</span><span class="pcc-pct">3.8%</span></div>
+        <div class="pcc-row pcc-row-group"><span>上架费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:0%;background:#CBD5E1"></div></div><span class="pcc-amt">$0</span><span class="pcc-pct">0%</span></div>
+        <div class="pcc-row pcc-row-group"><span>出库费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:1.3%;background:#CBD5E1"></div></div><span class="pcc-amt">$1.0</span><span class="pcc-pct">1.3%</span></div>
+        <div class="pcc-row pcc-row-group"><span>仓储费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:1.9%;background:#CBD5E1"></div></div><span class="pcc-amt">$1.5</span><span class="pcc-pct">1.9%</span></div>
+        <div class="pcc-row"><span>尾程物流</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:7.5%;background:#94A3B8"></div></div><span class="pcc-amt">$6.0</span><span class="pcc-pct">7.5%</span></div>
+        <div class="pcc-row pcc-row-plat"><span>平台抽佣</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:6%;background:#FCA5A5"></div></div><span class="pcc-amt" style="color:#DC2626">$4.79</span><span class="pcc-pct" style="color:#DC2626">6.0%</span></div>
+        <div class="pcc-row pcc-row-plat"><span>达人抽佣</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:6%;background:#FDBA74"></div></div><span class="pcc-amt" style="color:#F97316">$4.79</span><span class="pcc-pct" style="color:#F97316">6.0%</span></div>
+        <div class="pcc-row pcc-total"><span style="font-weight:700">总成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:51.4%;background:#F59E0B;border-radius:2px"></div></div><span class="pcc-amt" style="color:#D97706;font-weight:700">$41.08</span><span class="pcc-pct" style="color:#D97706;font-weight:700">51.4%</span></div>
+        <div class="pcc-profit"><span style="color:#059669;font-weight:700;font-size:13px">毛利润</span><div style="flex:1;margin:0 10px;height:6px;background:linear-gradient(to right,#34D399,#10B981);border-radius:3px"></div><span style="color:#059669;font-weight:700;font-size:15px">$38.82</span><span style="color:#059669;font-size:12px;margin-left:6px">(48.6%)</span></div>
+      </div>
+    </div>
+
+    <!-- 亚马逊 FBA -->
+    <div class="prod-chan-card" id="prod-amz">
+      <div class="pcc-header" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border-bottom-color:#FCD34D">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:18px">📦</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1C1C1E">亚马逊 FBA</div>
+            <div style="font-size:10px;color:#F59E0B;margin-top:1px">平台抽佣15% · 无达人抽佣</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">售价</div>
+            <div class="pcc-kpi-val" style="color:#1C1C1E">$79.9</div>
+          </div>
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">毛利润</div>
+            <div class="pcc-kpi-val" style="color:#D97706;font-size:22px">$36.41</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">毛利率</div>
+            <div class="pcc-kpi-val" style="color:#D97706">45.6%</div>
+          </div>
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">盈亏平衡ROI</div>
+            <div class="pcc-kpi-val" style="color:#D97706">1.84×</div>
+          </div>
+        </div>
+      </div>
+      <div class="pcc-body">
+        <div class="pcc-section-lbl">成本明细（共 $43.49/件）</div>
+        <div class="pcc-row"><span>货品成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:18.8%;background:#94A3B8"></div></div><span class="pcc-amt">$15.0</span><span class="pcc-pct">18.8%</span></div>
+        <div class="pcc-row"><span>包装成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.1%;background:#94A3B8"></div></div><span class="pcc-amt">$2.5</span><span class="pcc-pct">3.1%</span></div>
+        <div class="pcc-row pcc-row-group"><span>头程海运</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.8%;background:#CBD5E1"></div></div><span class="pcc-amt">$3.0</span><span class="pcc-pct">3.8%</span></div>
+        <div class="pcc-row pcc-row-group"><span>上架/入库费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:0.6%;background:#CBD5E1"></div></div><span class="pcc-amt">$0.5</span><span class="pcc-pct">0.6%</span></div>
+        <div class="pcc-row pcc-row-group"><span>出库费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:1.9%;background:#CBD5E1"></div></div><span class="pcc-amt">$1.5</span><span class="pcc-pct">1.9%</span></div>
+        <div class="pcc-row pcc-row-group"><span>仓储费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.8%;background:#CBD5E1"></div></div><span class="pcc-amt">$3.0</span><span class="pcc-pct">3.8%</span></div>
+        <div class="pcc-row"><span>尾程物流</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:7.5%;background:#94A3B8"></div></div><span class="pcc-amt">$6.0</span><span class="pcc-pct">7.5%</span></div>
+        <div class="pcc-row" style="opacity:.3"><span>达人抽佣</span><div class="pcc-bar-wrap"></div><span class="pcc-amt">$0</span><span class="pcc-pct">—</span></div>
+        <div class="pcc-row pcc-row-plat"><span>平台抽佣(15%)</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:15.0%;background:#FCA5A5"></div></div><span class="pcc-amt" style="color:#DC2626">$11.99</span><span class="pcc-pct" style="color:#DC2626">15.0%</span></div>
+        <div class="pcc-total pcc-row"><span style="font-weight:700">总成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:54.4%;background:#F59E0B;border-radius:2px"></div></div><span class="pcc-amt" style="color:#D97706;font-weight:700">$43.49</span><span class="pcc-pct" style="color:#D97706;font-weight:700">54.4%</span></div>
+        <div class="pcc-profit"><span style="color:#D97706;font-weight:700;font-size:13px">毛利润</span><div style="flex:1;margin:0 10px;height:6px;background:linear-gradient(to right,#FCD34D,#F59E0B);border-radius:3px"></div><span style="color:#D97706;font-weight:700;font-size:15px">$36.41</span><span style="color:#D97706;font-size:12px;margin-left:6px">(45.6%)</span></div>
+      </div>
+    </div>
+
+    <!-- 独立站 -->
+    <div class="prod-chan-card" id="prod-site">
+      <div class="pcc-header" style="background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-bottom-color:#A78BFA">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:18px">🌐</span>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:13px;font-weight:700;color:#1C1C1E">独立站</span>
+              <span style="font-size:10px;background:#7C3AED;color:#fff;padding:1px 6px;border-radius:4px;font-weight:600">★ 毛利最优</span>
+            </div>
+            <div style="font-size:10px;color:#A78BFA;margin-top:1px">无平台抽佣 · 无达人抽佣</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">售价</div>
+            <div class="pcc-kpi-val" style="color:#1C1C1E">$79.9</div>
+          </div>
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">毛利润</div>
+            <div class="pcc-kpi-val" style="color:#7C3AED;font-size:22px">$48.4</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">毛利率</div>
+            <div class="pcc-kpi-val" style="color:#7C3AED">60.6%</div>
+          </div>
+          <div class="pcc-kpi">
+            <div class="pcc-kpi-lbl">盈亏平衡ROI</div>
+            <div class="pcc-kpi-val" style="color:#7C3AED">2.54×</div>
+          </div>
+        </div>
+      </div>
+      <div class="pcc-body">
+        <div class="pcc-section-lbl">成本明细（共 $31.5/件）</div>
+        <div class="pcc-row"><span>货品成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:18.8%;background:#94A3B8"></div></div><span class="pcc-amt">$15.0</span><span class="pcc-pct">18.8%</span></div>
+        <div class="pcc-row"><span>包装成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.1%;background:#94A3B8"></div></div><span class="pcc-amt">$2.5</span><span class="pcc-pct">3.1%</span></div>
+        <div class="pcc-row pcc-row-group"><span>头程海运</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.8%;background:#CBD5E1"></div></div><span class="pcc-amt">$3.0</span><span class="pcc-pct">3.8%</span></div>
+        <div class="pcc-row pcc-row-group"><span>上架费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:0.6%;background:#CBD5E1"></div></div><span class="pcc-amt">$0.5</span><span class="pcc-pct">0.6%</span></div>
+        <div class="pcc-row pcc-row-group"><span>出库费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:1.9%;background:#CBD5E1"></div></div><span class="pcc-amt">$1.5</span><span class="pcc-pct">1.9%</span></div>
+        <div class="pcc-row pcc-row-group"><span>仓储费</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:3.8%;background:#CBD5E1"></div></div><span class="pcc-amt">$3.0</span><span class="pcc-pct">3.8%</span></div>
+        <div class="pcc-row"><span>尾程物流</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:7.5%;background:#94A3B8"></div></div><span class="pcc-amt">$6.0</span><span class="pcc-pct">7.5%</span></div>
+        <div class="pcc-row" style="opacity:.3"><span>平台抽佣</span><div class="pcc-bar-wrap"></div><span class="pcc-amt">$0</span><span class="pcc-pct">—</span></div>
+        <div class="pcc-row" style="opacity:.3"><span>达人抽佣</span><div class="pcc-bar-wrap"></div><span class="pcc-amt">$0</span><span class="pcc-pct">—</span></div>
+        <div class="pcc-total pcc-row"><span style="font-weight:700">总成本</span><div class="pcc-bar-wrap"><div class="pcc-bar" style="width:39.4%;background:#A78BFA;border-radius:2px"></div></div><span class="pcc-amt" style="color:#7C3AED;font-weight:700">$31.5</span><span class="pcc-pct" style="color:#7C3AED;font-weight:700">39.4%</span></div>
+        <div class="pcc-profit"><span style="color:#7C3AED;font-weight:700;font-size:13px">毛利润</span><div style="flex:1;margin:0 10px;height:6px;background:linear-gradient(to right,#C4B5FD,#7C3AED);border-radius:3px"></div><span style="color:#7C3AED;font-weight:700;font-size:15px">$48.4</span><span style="color:#7C3AED;font-size:12px;margin-left:6px">(60.6%)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三渠道成本构成对比 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#378ADD"></div>
+      <span class="sec-title">三渠道成本构成对比</span>
+      
+    </div>
+    <div class="cc">
+      <div class="cc-hd">
+        <div>
+          <div class="cc-t">成本与毛利分配</div>
+          
+        </div>
+        </div>
+      <div id="c-prod-stack" style="height:260px"></div>
+      
+    </div>
+    <!-- 隐藏旧图表 ID，保留 JS 兼容 -->
+    <div style="display:none">
+      <div id="c-prod-ch"></div>
+      <div id="c-prod-px"></div>
+    </div>
+  </div>
+
+  <!-- 模拟器（隐藏IDs保留JS兼容）-->
+  <div style="display:none">
+    <div id="c-prod-donut"></div><div id="c-sim"></div>
+    <input id="sr-p" value="79.9"><input id="sr-l" value="6">
+    <input id="sr-k" value="6"><input id="sr-pl" value="6">
+    <span id="sv-p"></span><span id="sv-l"></span><span id="sv-k"></span><span id="sv-pl"></span>
+    <span id="s-gp"></span><span id="s-mg"></span><span id="s-roi"></span><span id="s-fc"></span>
+  </div>
+</div>
+
+
+<!-- ═══ TAB4: 项目财务演算 ═══ -->
+<div id="tab-proj" class="tab-panel">
+
+  <!-- ① 总览 KPI -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#1D9E75"></div>
+      <span class="sec-title">项目财务总览</span>
+      
+    </div>
+    <div class="kpi-row kpi-5">
+      <div class="kpi-cell">
+        <div class="kpi-lbl">目标销售额</div>
+        <div class="kpi-val g">$1,030万</div>
+        <div class="kpi-sub">全案框架GMV合计</div>
+        </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">后端成本合计</div>
+        <div class="kpi-val a">$530.5万</div>
+        <div class="kpi-sub">产品+物流+平台抽成</div>
+        </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">营销成本合计</div>
+        <div class="kpi-val a">$238.5万</div>
+        <div class="kpi-sub">广告+达人+内容+运营</div>
+        </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">利润</div>
+        <div class="kpi-val g">$261万</div>
+        <div class="kpi-sub">销售额−后端−营销</div>
+        </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">综合利润率</div>
+        <div class="kpi-val g" style="font-size:22px">25.3%</div>
+        <div class="kpi-sub">利润÷目标销售额</div>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- ② 各阶段财务明细（横向Tab切换）-->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#378ADD"></div>
+      <span class="sec-title">各阶段财务明细</span>
+      
+    </div>
+    <div style="display:flex;gap:0;border-bottom:1.5px solid #E8E5DE;margin-bottom:20px">
+      <button class="pj-tab on" onclick="swPjTab(0,this)">准备阶段</button>
+      <button class="pj-tab" onclick="swPjTab(1,this)">0-1阶段</button>
+      <button class="pj-tab" onclick="swPjTab(2,this)">放量阶段</button>
+      <button class="pj-tab" onclick="swPjTab(3,this)">增长阶段</button>
+      <button class="pj-tab" onclick="swPjTab(4,this)">盈利阶段</button>
+    </div>
+    <div style="display:grid;grid-template-columns:256px 1fr;gap:16px;align-items:start">
+      <!-- 左：摘要卡片 -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:linear-gradient(135deg,#F0FDF9,#E6F5F0);border:1.5px solid #6EE7B7;border-radius:12px;padding:14px 16px">
+          <div style="font-size:10px;color:#0F6E56;font-weight:600;letter-spacing:.5px;margin-bottom:6px">目标销售额</div>
+          <div id="pj-kpi-gmv" style="font-size:28px;font-weight:700;color:#0F6E56;letter-spacing:-.5px">$150万</div>
+          
+        </div>
+        <div style="background:#FFFBF0;border:1.5px solid #FCD34D;border-radius:12px;padding:14px 16px">
+          <div style="font-size:10px;color:#633806;font-weight:600;letter-spacing:.5px;margin-bottom:6px">后端成本</div>
+          <div id="pj-kpi-bk" style="font-size:24px;font-weight:700;color:#854F0B;letter-spacing:-.5px">$79.7万</div>
+          <div id="pj-kpi-bk-pct" style="font-size:11px;color:#BA7517;margin-top:2px">占销售额 53.1%</div>
+          <div id="pj-kpi-bk-items" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+        </div>
+        <div style="background:#F5F3FF;border:1.5px solid #A78BFA;border-radius:12px;padding:14px 16px">
+          <div style="font-size:10px;color:#3C3489;font-weight:600;letter-spacing:.5px;margin-bottom:6px">营销成本</div>
+          <div id="pj-kpi-mkt" style="font-size:24px;font-weight:700;color:#534AB7;letter-spacing:-.5px">$87.9万</div>
+          <div id="pj-kpi-mkt-pct" style="font-size:11px;color:#7F77DD;margin-top:2px">占销售额 58.6%</div>
+          <div id="pj-kpi-mkt-items" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+        </div>
+        <div id="pj-profit-card" style="background:#E6F5F0;border:1.5px solid #6EE7B7;border-radius:12px;padding:14px 16px">
+          <div style="font-size:10px;color:#0F6E56;font-weight:600;letter-spacing:.5px;margin-bottom:6px">利润</div>
+          <div id="pj-kpi-profit" style="font-size:28px;font-weight:700;color:#0F6E56;letter-spacing:-.5px">-$2.6万</div>
+          <div id="pj-kpi-margin" style="font-size:13px;font-weight:600;margin-top:4px;color:#0F6E56">利润率 -1.7%</div>
+          <div style="font-size:10px;color:#B0ADAA;margin-top:4px">销售额 − 后端 − 营销</div>
+        </div>
+      </div>
+      <!-- 右：图表 -->
+      <div class="cc" style="height:100%">
+        <div class="cc-hd">
+          <div>
+            <div class="cc-t" id="pj-chart-title">0-1阶段 · 收入−成本−利润分解</div>
+            
+          </div>
+          
+        </div>
+        <div id="c-pj-stage-bar" style="height:580px;width:100%"></div>
+        <div id="pj-chart-src"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 利润瀑布图 + 营销成本 Donut 并排 -->
+
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#BA7517"></div>
+      <span class="sec-title">销售额利润分解 · 营销成本结构</span>
+      
+    </div>
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">利润瀑布图（全周期）</div></div></div>
+      <div id="c-pj-waterfall" style="height:420px"></div>
+        
+      </div>
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">营销成本结构</div></div></div>
+      <div id="c-pj-mkt" style="height:300px"></div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 各阶段成本+GMV堆叠 + 利润率趋势 并排 -->
+  <div class="section" style="display:none">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#7F77DD"></div>
+      <span class="sec-title">各阶段成本分解 · 利润率成长路径</span>
+      <span class="sec-sub">从亏损到盈利的完整财务路径 · 推算值</span>
+    </div>
+    <div class="g2">
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">各阶段成本与GMV对比</div></div></div>
+        <div id="c-pj-cost-stack" style="height:260px"></div>
+        
+      </div>
+      <div class="cc">
+        <div class="cc-hd"><div><div class="cc-t">各阶段利润率趋势</div></div></div>
+        <div id="c-pj-margin" style="height:260px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 各阶段明细卡片（已隐藏，数据保留）-->
+  <div style="display:none"><div id="pj-cards"></div></div>
+
+  <!-- ⑤ 0-1现金流（已移至0-1阶段Tab，此处隐藏）-->
+  <div class="section" style="display:none">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#E24B4A"></div>
+      <span class="sec-title">0-1阶段累计现金流</span>
+      
+    </div>
+    <div class="cc">
+      <div class="cc-hd">
+        <div><div class="cc-t">0-1阶段月度GMV vs 累计投入</div><div class="cc-s">GMV目标直取 · 月度成本各费用项合计推算 · 第4月实现月度盈亏平衡</div></div>
+        <div style="display:flex;gap:6px">
+          <span style="font-size:10px;padding:3px 8px;border-radius:20px;background:#FDEAEA;color:#A32D2D;font-weight:600">▼ 亏损峰值 第1月</span>
+          <span style="font-size:10px;padding:3px 8px;border-radius:20px;background:#E6F5F0;color:#085041;font-weight:600">▲ 月度盈亏平衡 第4月</span>
+        </div>
+      </div>
+      <div id="c-p01-cashflow" style="height:280px"></div>
+      
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══ TAB: 准备阶段 ═══ -->
+<div id="tab-prep" class="tab-panel">
+
+  <!-- 核心指标（与0-1阶段完全一致的样式）-->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#1D9E75"></div>
+      <span class="sec-title">准备阶段核心指标</span>
+    </div>
+    <div class="kpi-row kpi-3">
+      <div class="kpi-cell">
+        <div class="kpi-lbl">阶段总预算</div>
+        <div class="kpi-val">$10,000</div>
+        <div class="kpi-sub">前期筹备合计</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">周期</div>
+        <div class="kpi-val a">1.5个月</div>
+        <div class="kpi-sub">正式启动前</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-lbl">阶段目标</div>
+        <div class="kpi-val" style="font-size:20px;color:#1C1C1E">完成所有准备工作</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 核心任务 -->
+  <div class="section">
+    <div class="sec-label">
+      <div class="sec-dot" style="background:#BA7517"></div>
+      <span class="sec-title">核心任务</span>
+      <div class="sec-fill"></div>
+      <span class="sec-badge">1.5个月 · $10,000</span>
+    </div>
+    <div id="prep-tasks"></div>
+  </div>
+
+</div>
+
+<!-- ═══ TAB: 放量阶段 ═══ -->
+<div id="tab-fang" class="tab-panel">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:16px;color:#B0ADAA">
+    <div style="font-size:48px">📋</div>
+    <div style="font-size:18px;font-weight:600;color:#8A8A8E">放量阶段数据待补充</div>
+    <div style="font-size:13px;color:#B0ADAA;text-align:center;max-width:400px;line-height:1.8">
+      放量阶段（3个月）执行数据正在整理中<br>
+      目标 GMV $210万 · ROI≥3.8<br>
+      完成后将同步更新至此页面
+    </div>
+    <div style="margin-top:8px;padding:8px 20px;background:#F7F6F2;border-radius:8px;font-size:12px;color:#8A8A8E">
+      预算 $68.4万 · TK广告$30万 · AMZ广告$15万 · 独立站广告$9万
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: 增长阶段 ═══ -->
+<div id="tab-grow" class="tab-panel">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:16px;color:#B0ADAA">
+    <div style="font-size:48px">🚀</div>
+    <div style="font-size:18px;font-weight:600;color:#8A8A8E">增长阶段数据待补充</div>
+    <div style="font-size:13px;color:#B0ADAA;text-align:center;max-width:400px;line-height:1.8">
+      增长阶段（3个月）执行数据正在整理中<br>
+      目标 GMV $300万 · ROI≥4.5<br>
+      完成后将同步更新至此页面
+    </div>
+    <div style="margin-top:8px;padding:8px 20px;background:#F7F6F2;border-radius:8px;font-size:12px;color:#8A8A8E">
+      预算 $81.9万 · TK广告$36万 · AMZ广告$18万
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: 盈利阶段 ═══ -->
+<div id="tab-profit" class="tab-panel">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:16px;color:#B0ADAA">
+    <div style="font-size:48px">💰</div>
+    <div style="font-size:18px;font-weight:600;color:#8A8A8E">盈利阶段数据待补充</div>
+    <div style="font-size:13px;color:#B0ADAA;text-align:center;max-width:400px;line-height:1.8">
+      盈利阶段（3个月）执行数据正在整理中<br>
+      目标 GMV $370万 · ROI≥4.6<br>
+      完成后将同步更新至此页面
+    </div>
+    <div style="margin-top:8px;padding:8px 20px;background:#F7F6F2;border-radius:8px;font-size:12px;color:#8A8A8E">
+      预算 $95.4万 · TK广告$36万 · AMZ广告$18万 · 独立站广告$9万
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const CE={g:'#1D9E75',a:'#BA7517',p:'#7F77DD',r:'#E24B4A',b:'#378ADD',mu:'#D3D1C7',tx:'#1C1C1E',bd:'#EFEDE8'};
+const ax={axisLine:{lineStyle:{color:'#EFEDE8'}},axisTick:{show:false},axisLabel:{color:'#B0ADAA',fontSize:11},splitLine:{lineStyle:{color:'#F5F3EE',type:'dashed'}}};
+const tt={backgroundColor:'#fff',borderColor:'#EFEDE8',textStyle:{color:'#1C1C1E'},extraCssText:'box-shadow:0 2px 12px rgba(0,0,0,.08);border-radius:8px;padding:8px 12px;'};
+
+// ── Excel直取数据 ──
+const STAGES=['准备阶段','0-1阶段','放量阶段','增长阶段','盈利阶段'];
+const BUDGETS=[10000,878600,684000,819000,954000];
+const GMV=[0,1500000,2100000,3000000,3700000];
+const ROI_TGT=[null,3.0,3.8,4.5,4.6];
+const DURATIONS=['1.5个月','6个月','3个月','3个月','3个月'];
+
+// 0-1月度数据直取
+const M=['第1月','第2月','第3月','第4月','第5月','第6月'];
+const M_GMV=[65000,100000,170000,260000,370000,490000];
+const M_TK=[30000,40000,54000,66000,80000,90000];
+const M_AMZ=[10000,12000,20000,25000,30000,36000];
+const M_SEED=[40000,0,0,0,0,0];
+const M_PAID=[36000,30000,24000,18000,9000,9000];
+const M_PCT=[1000,1200,2400,0,4000,4000];
+const M_CONTENT=[15000,15000,15000,15000,15000,15000];
+const M_OPS=[20000,20000,20000,18000,18000,18000];
+const M_COST=M.map((_,i)=>M_TK[i]+M_AMZ[i]+M_SEED[i]+M_PAID[i]+M_PCT[i]+M_CONTENT[i]+M_OPS[i]);
+
+// 项目财务演算Sheet广告直取
+const ADV_TK=[0,360000,300000,360000,360000];
+const ADV_AMZ=[0,133000,150000,180000,180000];
+const ADV_SITE=[0,0,90000,0,0];
+
+// KOL数量直取
+const KOL_SEED=[20,0,0,0,0,0];
+const KOL_PAID=[120,100,80,60,30,30];
+const KOL_PCT=[50,60,120,150,200,200];
+
+const tlData=[
+  {s:'准备阶段',t:'1.5个月',b:'$10,000',g:'—',r:'—',tasks:[
+    '产品上新：1-2款，搭建产品矩阵',
+    '社媒账号：以YTB+TK+INS平台为主，官号日更，Reddit社区以种草为主',
+    '内容素材：实拍视频+AI视频+矩阵账号分发，单号日更3-5条',
+    '独立站搭建：作为品宣对外，承接外溢流量',
+    '亚马逊开店：维持正常运营，优化链接',
+    'TikTok开店：账号孵化，基础内容积累',
+    '仓储物流搭建：海外仓选址，头程方案确认',
+  ]},
+  {s:'0-1阶段',t:'6个月',b:'$878,600',g:'$1,500,000',r:'≥3.0×',tasks:[
+    '产品上新：1-2款，搭建产品矩阵',
+    '种草达人：头部达人种草合作6+，以头部垂类达人为主，均播1M+、内容垂直度高、粉丝信任度高、意见领袖型，均价约2000美元/个',
+    '带货达人：付费垂类博主合作100+，以带货能力的优质达人为主，均播10K+或月GMV10k+，内容配合度高，个人表现力好，均价300美元/个',
+    '纯佣带货达人：TikTok纯佣带货达人每月合作200个左右，均播2k+或月GMV5k+，内容配合度高，个人表现力好，均价20美元/个',
+    '社媒账号：以YTB+TK+INS平台为主，官号日更，内容贴吧等社区以种草为主（Reddit）',
+    'UGC推广：设置奖励及活动机制，提供各种类型的爆款视频模版，号召已购买用户发布使用反馈视频，与官号及达人联动（长期运营）',
+    '内容素材：实拍视频+AI视频+矩阵账号分发，单号日更3-5条，优质广告素材5-10条/天（日均50条视频+）',
+    'TikTok广告：以达人视频+自制素材投放为主，平均预算$90000/月',
+    '亚马逊广告：维持正常运营，承接外溢流量，控量投放即可，投放费用$45000/月，严控ROI（若能放量，再另行增加广告预算）',
+    '独立站：维持正常运营，承接外溢流量，前期作为品宣对外，前面三个月不做投放，后面三个月少量投放测试，投放费用$30000/月，严控ROI（若能放量，再另行增加广告预算）',
+  ]},
+  {s:'放量阶段',t:'3个月',b:'$684,000',g:'$2,100,000',r:'≥3.8×',tasks:[
+    '产品上新：1-2款，持续扩充产品矩阵',
+    '带货达人：付费垂类博主合作100+/月，持续输出带货内容',
+    '纯佣带货达人：TikTok纯佣带货达人200+/月，扩大覆盖',
+    'TikTok广告：GMVmax投放为主，预算$90000/月',
+    '亚马逊广告：承接外溢流量，投放费用$45000/月，严控ROI',
+    '独立站广告：少量投放测试，投放费用$30000/月，严控ROI',
+    '内容矩阵：日均50条视频+，爆款素材持续迭代',
+  ]},
+  {s:'增长阶段',t:'3个月',b:'$819,000',g:'$3,000,000',r:'≥4.5×',tasks:[
+    '产品上新：1-2款，扩充高毛利SKU',
+    '线下渠道试水：利用线上影响力，低成本进入线下，接触Costco/Walmart',
+    '带货达人：持续合作100+/月，优化达人结构',
+    'TikTok广告：$120000/月，ROI严控4.5+',
+    '亚马逊广告：$60000/月，ROI严控',
+    '内容矩阵：日均50条视频+，持续优化爆款',
+  ]},
+  {s:'盈利阶段',t:'3个月',b:'$954,000',g:'$3,700,000',r:'≥4.6×',tasks:[
+    '线上线下联动：线上TikTok/AMZ/独立站协同，线下渠道深化',
+    'TikTok广告：$120000/月，ROI≥4.6',
+    '亚马逊广告：$60000/月，ROI严控',
+    '独立站广告：$90000/月，ROI严控',
+    '达人合作：精细化运营，阶梯提成结算',
+    '品牌建设：PR背书、用户社区运营持续深化',
+  ]},
+];
+let curTL=-1;
+function xtl(i){
+  const w=document.getElementById('tl-x');
+  if(curTL===i){w.classList.remove('show');curTL=-1;return;}
+  curTL=i;const d=tlData[i];
+  document.getElementById('tl-xd').innerHTML=`<div><div class="exp-lbl">阶段</div><div class="exp-val">${d.s}</div></div><div><div class="exp-lbl">周期</div><div class="exp-val">${d.t}</div></div><div><div class="exp-lbl">预算</div><div class="exp-val" style="color:${CE.g}">${d.b}</div></div><div><div class="exp-lbl">GMV目标</div><div class="exp-val" style="color:${CE.a}">${d.g}</div></div><div><div class="exp-lbl">ROI目标</div><div class="exp-val" style="color:${CE.p}">${d.r}</div></div>`;
+  document.getElementById('tl-xt').innerHTML=d.tasks.map(t=>{
+    const col=t.indexOf('：');
+    if(col>-1){
+      const label=t.slice(0,col+1);
+      const detail=t.slice(col+1);
+      return `<div class="tl-task-row"><span class="tl-task-label">${label}</span><span class="tl-task-detail">${detail}</span></div>`;
+    }
+    return `<div class="tl-task-row"><span class="tl-task-detail">${t}</span></div>`;
+  }).join('');
+  w.classList.add('show');
+}
+function togCol(el){const c=el.nextElementSibling;c.classList.toggle('open');el.querySelector('i').style.transform=c.classList.contains('open')?'rotate(90deg)':'';}
+
+const inited={};
+function sw(id,el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');el.classList.add('on');
+  setTimeout(()=>iTab(id),60);
+}
+function iTab(id){if(inited[id])return;inited[id]=true;
+  if(id==='fw')iFW();else if(id==='p01')iP01();else if(id==='prod'){iProd();uSim();}else if(id==='proj')iProj();else if(id==='prep')iPrep();
+}
+function mk(id){return echarts.init(document.getElementById(id),null,{renderer:'canvas'});}
+
+function iFW(){
+  // Donut – 预算占比
+  mk('c-fw-donut').setOption({backgroundColor:'transparent',tooltip:{trigger:'item',formatter:'{b}: ${c}万 ({d}%)',...tt},
+    series:[{type:'pie',radius:['52%','78%'],center:['50%','50%'],
+      label:{show:true,color:'#B0ADAA',fontSize:11,formatter:'{b}\n${c}万'},labelLine:{lineStyle:{color:CE.mu}},
+      data:STAGES.map((s,i)=>({value:(BUDGETS[i]/10000).toFixed(1),name:s,itemStyle:{color:[CE.mu,CE.g,CE.a,CE.p,CE.b][i]}}))}]});
+
+  // GMV目标柱图
+  mk('c-fw-gmv').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',...tt,formatter:p=>`${p[0].axisValue}<br/>GMV目标: $${p[0].value}万`},
+    grid:{left:50,right:16,top:14,bottom:28},
+    xAxis:{...ax,type:'category',data:['0-1阶段','放量阶段','增长阶段','盈利阶段']},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>v+'万'}},
+    series:[{type:'bar',data:[150,210,300,370],barMaxWidth:48,
+      itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#5DCAA5'},{offset:1,color:'#C0E8D8'}]},borderRadius:[4,4,0,0]},
+      label:{show:true,position:'top',color:CE.g,fontSize:12,fontWeight:'bold',formatter:v=>'$'+v.value+'万'}}]});
+
+  // ROI目标折线
+  mk('c-fw-roi').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',...tt},
+    grid:{left:40,right:16,top:14,bottom:28},
+    xAxis:{...ax,type:'category',data:['0-1阶段','放量阶段','增长阶段','盈利阶段']},
+    yAxis:{...ax,type:'value',min:2,max:6,axisLabel:{...ax.axisLabel,formatter:v=>v+'×'}},
+    series:[{type:'line',smooth:true,symbol:'circle',symbolSize:10,data:[3.0,3.8,4.5,4.6],
+      lineStyle:{color:CE.p,width:2.5},itemStyle:{color:CE.p},
+      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(127,119,221,.15)'},{offset:1,color:'rgba(127,119,221,0)'}]}},
+      label:{show:true,position:'top',color:CE.p,fontSize:11,formatter:v=>v.value+'×'}}]});
+
+  // 预算vs GMV对比
+  mk('c-fw-compare').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',axisPointer:{type:'shadow'},...tt},
+    legend:{top:0,textStyle:{color:'#B0ADAA',fontSize:11}},
+    grid:{left:56,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:['0-1阶段','放量阶段','增长阶段','盈利阶段']},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>v+'万'}},
+    series:[
+      {name:'预算投入',type:'bar',data:[87.9,68.4,81.9,95.4],barMaxWidth:30,itemStyle:{color:CE.a,borderRadius:[3,3,0,0]}},
+      {name:'GMV目标',type:'bar',data:[150,210,300,370],barMaxWidth:30,itemStyle:{color:CE.g,borderRadius:[3,3,0,0]}}
+    ]});
+}
+
+function iP01(){
+  // 预算结构 Donut
+  mk('c-p01-bud').setOption({backgroundColor:'transparent',tooltip:{trigger:'item',formatter:'{b}: ${c}万 ({d}%)',...tt},
+    series:[{type:'pie',radius:['50%','76%'],center:['50%','50%'],
+      label:{show:true,color:'#B0ADAA',fontSize:11,formatter:'{b}\n${c}万'},labelLine:{lineStyle:{color:CE.mu}},
+      data:[
+        {value:49.3,name:'广告投放(TK+AMZ)',itemStyle:{color:CE.g}},
+        {value:17.86,name:'达人合作(种草+带货+纯佣)',itemStyle:{color:CE.p}},
+        {value:9,name:'内容矩阵',itemStyle:{color:CE.b}},
+        {value:11.4,name:'项目运营',itemStyle:{color:CE.mu}},
+      ]}]});
+
+  // GMV月度折线
+  mk('c-p01-gmv').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',...tt,formatter:p=>`${p[0].axisValue}<br/>GMV目标: <b>$${(p[0].value/10000).toFixed(1)}万</b>`},
+    grid:{left:56,right:16,top:14,bottom:28},
+    xAxis:{...ax,type:'category',data:M},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>'$'+(v/10000).toFixed(0)+'万'}},
+    series:[{type:'line',smooth:true,symbol:'circle',symbolSize:8,data:M_GMV,
+      lineStyle:{color:CE.g,width:2.5},itemStyle:{color:CE.g},
+      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(29,158,117,.15)'},{offset:1,color:'rgba(29,158,117,0)'}]}},
+      label:{show:true,position:'top',color:CE.g,fontSize:10,formatter:v=>'$'+(v.value/10000).toFixed(1)+'万'}}]});
+
+  // 广告月度堆叠柱
+  mk('c-p01-ads').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',axisPointer:{type:'shadow'},...tt},
+    legend:{top:0,textStyle:{color:'#B0ADAA',fontSize:11}},
+    grid:{left:56,right:16,top:30,bottom:28},
+    barGap:'10%',barCategoryGap:'40%',
+    xAxis:{...ax,type:'category',data:M},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>'$'+(v/1000).toFixed(0)+'K'}},
+    series:[
+      {name:'TikTok GMVmax',type:'bar',data:M_TK,itemStyle:{color:CE.g}},
+      {name:'亚马逊广告',type:'bar',data:M_AMZ,itemStyle:{color:CE.a,borderRadius:[3,3,0,0]}}
+    ]});
+
+  // GMV vs 月度成本
+  const cum_cost=[], cum_gmv=[];
+  let cc=0,cg=0;
+  M.forEach((_,i)=>{cc+=M_COST[i];cg+=M_GMV[i];cum_cost.push(cc);cum_gmv.push(cg);});
+  mk('c-p01-cf').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',...tt},
+    legend:{top:0,textStyle:{color:'#B0ADAA',fontSize:11}},
+    grid:{left:56,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:M},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>'$'+(v/10000).toFixed(0)+'万'}},
+    series:[
+      {name:'月度成本',type:'bar',data:M_COST,barMaxWidth:20,itemStyle:{color:CE.r,borderRadius:[3,3,0,0],opacity:.7}},
+      {name:'月度GMV目标',type:'bar',data:M_GMV,barMaxWidth:20,itemStyle:{color:CE.g,borderRadius:[3,3,0,0]}},
+    ]});
+
+  // 达人月度数量
+  mk('c-p01-kol-num').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',axisPointer:{type:'shadow'},...tt},
+    legend:{top:0,textStyle:{color:'#B0ADAA',fontSize:11}},
+    grid:{left:40,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:M},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>v+'人'}},
+    series:[
+      {name:'种草达人',type:'bar',barMaxWidth:18,data:KOL_SEED,itemStyle:{color:CE.p,borderRadius:[3,3,0,0]}},
+      {name:'付费带货',type:'bar',barMaxWidth:18,data:KOL_PAID,itemStyle:{color:CE.g,borderRadius:[3,3,0,0]}},
+      {name:'纯佣达人',type:'bar',barMaxWidth:18,data:KOL_PCT,itemStyle:{color:CE.a,borderRadius:[3,3,0,0]}}
+    ]});
+
+  // 达人费用占比
+  mk('c-p01-kol-fee').setOption({backgroundColor:'transparent',tooltip:{trigger:'item',formatter:'{b}: ${c}万 ({d}%)',...tt},
+    series:[{type:'pie',radius:['40%','70%'],center:['50%','50%'],
+      label:{show:true,color:'#B0ADAA',fontSize:11,formatter:'{b}\n${c}万'},labelLine:{lineStyle:{color:CE.mu}},
+      data:[
+        {value:4,name:'种草达人',itemStyle:{color:CE.p}},
+        {value:12.6,name:'付费带货达人',itemStyle:{color:CE.g}},
+        {value:1.26,name:'纯佣达人',itemStyle:{color:CE.a}},
+      ]}]});
+
+  setTimeout(()=>renderMoView(0),80);
+}
+
+let simC;
+function uSim(){
+  const price=+document.getElementById('sr-p').value;
+  const log=+document.getElementById('sr-l').value;
+  const kol=+document.getElementById('sr-k').value/100;
+  const plat=+document.getElementById('sr-pl').value/100;
+  document.getElementById('sv-p').textContent='$'+price.toFixed(1);
+  document.getElementById('sv-l').textContent='$'+log.toFixed(1);
+  document.getElementById('sv-k').textContent=(kol*100).toFixed(0)+'%';
+  document.getElementById('sv-pl').textContent=(plat*100).toFixed(0)+'%';
+  const pc=17.5,hf=8,kf=price*kol,pf=price*plat;
+  const fc=pc+hf+log;
+  const gross=price-fc-kf-pf;
+  const mg=(gross/price*100).toFixed(1);
+  const roi=(price/(price-gross+.001)).toFixed(2);
+  document.getElementById('s-gp').textContent='$'+gross.toFixed(1);
+  document.getElementById('s-gp').className='sim-rv '+(gross>=0?'g':'r');
+  document.getElementById('s-mg').textContent=mg+'%';
+  document.getElementById('s-mg').className='sim-rv '+(gross>=0?'g':'r');
+  document.getElementById('s-roi').textContent=roi+'×';
+  document.getElementById('s-fc').textContent='$'+fc.toFixed(1);
+  if(simC){simC.setOption({series:[{data:[
+    {value:pc.toFixed(1),name:'货品成本(直取)'},{value:hf.toFixed(1),name:'头程仓储(直取)'},{value:log.toFixed(1),name:'尾程物流(直取)'},
+    {value:pf.toFixed(1),name:'平台佣金(直取规则)'},{value:kf.toFixed(1),name:'达人佣金(直取规则)'},
+    {value:Math.max(0,gross).toFixed(1),name:'毛利润(推算)'}
+  ]}]});}
+}
+
+function iProd(){
+  const price=79.9,pc=17.5,hf=8,fo=6;
+  const tk_plat=price*0.06,tk_kol=price*0.06,amz_plat=price*0.15;
+  const tk_g=price-pc-hf-fo-tk_plat-tk_kol;
+  const amz_g=price-pc-hf-fo-amz_plat;
+  const site_g=price-pc-hf-fo;
+
+  mk('c-prod-donut').setOption({backgroundColor:'transparent',tooltip:{trigger:'item',formatter:'{b}: ${c} ({d}%)',...tt},
+    series:[{type:'pie',radius:['50%','76%'],center:['50%','50%'],
+      label:{show:true,color:'#B0ADAA',fontSize:11,formatter:'{b}\n${c}'},labelLine:{lineStyle:{color:CE.mu}},
+      data:[
+        {value:pc,name:'货品成本(直取)',itemStyle:{color:'#B4B2A9'}},
+        {value:hf,name:'头程仓储(直取)',itemStyle:{color:'#D3D1C7'}},
+        {value:fo,name:'尾程物流(直取)',itemStyle:{color:CE.b}},
+        {value:tk_plat.toFixed(2),name:'TK平台6%(直取规则)',itemStyle:{color:CE.r}},
+        {value:tk_kol.toFixed(2),name:'达人佣金6%(直取规则)',itemStyle:{color:CE.a}},
+        {value:tk_g.toFixed(2),name:'毛利润(推算)',itemStyle:{color:CE.g}},
+      ]}]});
+
+  // 三渠道对比：用通用成本结构（各渠道独立）
+  const tk_cost=15+2.5+3+0+1+1.5+6+4.79+4.79;   // TK总成本
+  const amz_cost=15+2.5+3+0.5+3.5+2+0+11.99;     // AMZ总成本（FBA含尾程）
+  const site_cost=15+2.5+3+0+1+1+6+0+0;           // 独立站总成本
+  const tk_g2=+(79.9-tk_cost).toFixed(2);
+  const amz_g2=+(79.9-amz_cost).toFixed(2);
+  const site_g2=+(79.9-site_cost).toFixed(2);
+  const tk_r2=(tk_g2/79.9*100).toFixed(1);
+  const amz_r2=(amz_g2/79.9*100).toFixed(1);
+  const site_r2=(site_g2/79.9*100).toFixed(1);
+  mk('c-prod-ch').setOption({backgroundColor:'transparent',
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},...tt,
+      formatter:p=>`${p[0].name}<br/>毛利润: <b>$${p[0].value}</b><br/>毛利率: <b>${[tk_r2,amz_r2,site_r2][p[0].dataIndex]}%</b>`},
+    grid:{left:50,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:['TikTok Shop','亚马逊 FBA','独立站']},
+    yAxis:{...ax,type:'value',min:0,max:70,axisLabel:{...ax.axisLabel,formatter:v=>'$'+v}},
+    series:[{type:'bar',barMaxWidth:56,
+      data:[
+        {value:tk_g2,  itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#10B981'},{offset:1,color:'#A7F3D0'}]},borderRadius:[6,6,0,0]}},
+        {value:amz_g2, itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#F59E0B'},{offset:1,color:'#FDE68A'}]},borderRadius:[6,6,0,0]}},
+        {value:site_g2,itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#7C3AED'},{offset:1,color:'#DDD6FE'}]},borderRadius:[6,6,0,0]}},
+      ],
+      label:{show:true,position:'top',fontSize:12,fontWeight:'bold',
+        formatter:p=>'$'+[tk_g2,amz_g2,site_g2][p.dataIndex]+'\n('+[tk_r2,amz_r2,site_r2][p.dataIndex]+'%)'}}]});
+
+  const prices=[59.9,69.9,79.9,89.9,99.9,109.9,119.9];
+  mk('c-prod-px').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',...tt},
+    legend:{top:0,textStyle:{color:'#B0ADAA',fontSize:11}},
+    grid:{left:46,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:prices.map(p=>'$'+p)},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>'$'+v}},
+    series:[
+      {name:'TikTok毛利润',type:'line',smooth:true,symbol:'circle',symbolSize:6,
+       data:prices.map(p=>+(p-pc-hf-fo-p*.06-p*.06).toFixed(1)),
+       lineStyle:{color:CE.g,width:2},itemStyle:{color:CE.g}},
+      {name:'亚马逊毛利润',type:'line',smooth:true,symbol:'circle',symbolSize:6,
+       data:prices.map(p=>+(p-pc-hf-fo-p*.15).toFixed(1)),
+       lineStyle:{color:CE.a,width:2},itemStyle:{color:CE.a}},
+      {name:'独立站毛利润',type:'line',smooth:true,symbol:'circle',symbolSize:6,
+       data:prices.map(p=>+(p-pc-hf-fo).toFixed(1)),
+       lineStyle:{color:CE.p,width:2},itemStyle:{color:CE.p}},
+    ]});
+
+  simC=mk('c-sim');
+  simC.setOption({backgroundColor:'transparent',tooltip:{trigger:'item',formatter:'{b}: ${c} ({d}%)',...tt},
+    series:[{type:'pie',radius:['48%','72%'],center:['50%','50%'],
+      label:{show:true,color:'#B0ADAA',fontSize:11,formatter:'{b}\n${c}'},labelLine:{lineStyle:{color:CE.mu}},
+      data:[
+        {value:pc,name:'货品成本',itemStyle:{color:'#B4B2A9'}},
+        {value:hf,name:'头程仓储',itemStyle:{color:'#D3D1C7'}},
+        {value:fo,name:'尾程物流',itemStyle:{color:CE.b}},
+        {value:(price*.06).toFixed(2),name:'平台佣金',itemStyle:{color:CE.r}},
+        {value:(price*.06).toFixed(2),name:'达人佣金',itemStyle:{color:CE.a}},
+        {value:tk_g.toFixed(2),name:'毛利润',itemStyle:{color:CE.g}},
+      ]}]});
+
+  // ── 三渠道成本构成堆叠横向条形图 ──
+  // 数据：各渠道独立成本结构（估算分拆后）
+  const CHAN_DATA = [
+    {
+      name: 'TikTok Shop', price: 79.9,
+      items: [
+        {name:'货品成本',     v:15.0,  color:'#94A3B8'},
+        {name:'包装成本',     v:2.5,   color:'#CBD5E1'},
+        {name:'头程海运',     v:3.0,   color:'#BAC8D3'},
+        {name:'上架费',       v:0.5,   color:'#BAC8D3'},
+        {name:'出库费',       v:1.5,   color:'#BAC8D3'},
+        {name:'仓储费',       v:3.0,   color:'#94A3B8'},
+        {name:'尾程物流',     v:6.0,   color:'#64748B'},
+        {name:'平台抽佣(6%)', v:4.79, color:'#FCA5A5'},
+        {name:'达人抽佣(6%)', v:4.79, color:'#FDBA74'},
+      ],
+      profitColor: '#10B981',
+    },
+    {
+      name: '亚马逊 FBA', price: 79.9,
+      items: [
+        {name:'货品成本',      v:15.0,  color:'#94A3B8'},
+        {name:'包装成本',      v:2.5,   color:'#CBD5E1'},
+        {name:'头程海运',      v:3.0,   color:'#BAC8D3'},
+        {name:'上架/入库费',   v:0.5,   color:'#BAC8D3'},
+        {name:'出库费',        v:1.5,   color:'#BAC8D3'},
+        {name:'仓储费',        v:3.0,   color:'#94A3B8'},
+        {name:'尾程物流',      v:6.0,   color:'#64748B'},
+        {name:'达人抽佣',      v:0,     color:'transparent'},
+        {name:'平台抽佣(15%)', v:11.99, color:'#FCA5A5'},
+      ],
+      profitColor: '#F59E0B',
+    },
+    {
+      name: '独立站', price: 79.9,
+      items: [
+        {name:'货品成本',  v:15.0, color:'#94A3B8'},
+        {name:'包装成本',  v:2.5,  color:'#CBD5E1'},
+        {name:'头程海运',  v:3.0,  color:'#BAC8D3'},
+        {name:'上架费',    v:0.5,  color:'#BAC8D3'},
+        {name:'出库费',    v:1.5,  color:'#BAC8D3'},
+        {name:'仓储费',    v:3.0,  color:'#94A3B8'},
+        {name:'尾程物流',  v:6.0,  color:'#64748B'},
+        {name:'平台抽佣',  v:0,    color:'transparent'},
+        {name:'达人抽佣',  v:0,    color:'transparent'},
+      ],
+      profitColor: '#7C3AED',
+    },
+  ];
+
+  // 统一所有渠道的 item 名称（取并集）
+  const allItemNames = [];
+  CHAN_DATA.forEach(ch => ch.items.forEach(it => {
+    if(it.v > 0 && !allItemNames.includes(it.name)) allItemNames.push(it.name);
+  }));
+
+  // 为每个 item 构建一个 series（每渠道一条）
+  const prodStackSeries = [];
+
+  allItemNames.forEach(itemName => {
+    const data = CHAN_DATA.map(ch => {
+      const it = ch.items.find(i => i.name === itemName);
+      if(!it || it.v <= 0) return { value: null };
+      return {
+        value: it.v,
+        itemStyle: { color: it.color, borderRadius: 0 },
+        label: {
+          show: it.v >= 2,
+          formatter: () => '$'+it.v,
+          fontSize: 10,
+          color: '#fff',
+          fontWeight: '500',
+        }
+      };
+    });
+    prodStackSeries.push({
+      name: itemName,
+      type: 'bar',
+      stack: 'cost',
+      barWidth: 42,
+      data,
+      label: { show: true, position: 'inside', fontSize: 10, color: '#fff' },
+      emphasis: { focus: 'series' },
+    });
+  });
+
+  // 毛利润 series（最右边，每渠道颜色不同）
+  prodStackSeries.push({
+    name: '毛利润',
+    type: 'bar',
+    stack: 'cost',
+    barWidth: 42,
+    data: CHAN_DATA.map(ch => {
+      const totalCost = ch.items.reduce((s, i) => s + i.v, 0);
+      const profit = +(ch.price - totalCost).toFixed(2);
+      const pct = (profit / ch.price * 100).toFixed(1);
+      return {
+        value: profit,
+        itemStyle: {
+          color: {
+            type: 'linear', x: 0, y: 0, x2: 1, y2: 0,
+            colorStops: [
+              { offset: 0, color: ch.profitColor+'99' },
+              { offset: 1, color: ch.profitColor },
+            ]
+          },
+          borderRadius: [0, 4, 4, 0],
+        },
+        label: {
+          show: true,
+          position: 'right',
+          formatter: () => {
+            const totalCost = ch.items.reduce((s, i) => s + i.v, 0);
+            const p2 = +(ch.price - totalCost).toFixed(2);
+            const pct2 = (p2 / ch.price * 100).toFixed(1);
+            return `$${p2}  (${pct2}%)`;
+          },
+          fontSize: 13,
+          fontWeight: '700',
+          color: ch.profitColor,
+        }
+      };
+    }),
+    emphasis: { focus: 'series' },
+  });
+
+  // 售价参考虚线
+  const maxPrice = Math.max(...CHAN_DATA.map(c => c.price));
+  prodStackSeries.push({
+    type: 'scatter', data: [], silent: true,
+    markLine: {
+      symbol: ['none', 'none'],
+      data: [{
+        xAxis: maxPrice,
+        lineStyle: { color: '#059669', type: 'dashed', width: 1.5, opacity: .5 },
+        label: {
+          show: false,
+        }
+      }]
+    }
+  });
+
+  const prodStackEl = document.getElementById('c-prod-stack');
+  if(prodStackEl) {
+    const prodStackC = echarts.init(prodStackEl, null, {renderer: 'canvas'});
+    prodStackC.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis', axisPointer: {type: 'shadow'}, ...tt,
+        formatter: params => {
+          const valid = params.filter(p => p.value > 0);
+          if(!valid.length) return '';
+          const chan = CHAN_DATA[params[0].dataIndex];
+          const rows = valid.map(p =>
+            `${p.marker}<b>${p.seriesName}</b>: $${p.value}`
+          ).join('<br/>');
+          const totalCost = chan.items.reduce((s,i)=>s+i.v, 0);
+          const profit = +(chan.price - totalCost).toFixed(2);
+          return `<b>${chan.name}</b><br/>${rows}<br/><hr style="margin:4px 0;border-color:#eee"/>总成本: $${totalCost.toFixed(2)}<br/>毛利润: <b style="color:${chan.profitColor}">$${profit}</b>`;
+        }
+      },
+      legend: {
+        top: 0, left: 0,
+        textStyle: { color: '#B0ADAA', fontSize: 10 },
+        itemWidth: 10, itemHeight: 10,
+        data: [...allItemNames, '毛利润'],
+      },
+      grid: { left: 90, right: 140, top: 36, bottom: 32, containLabel: false },
+      xAxis: {
+        ...ax, type: 'value',
+        max: maxPrice * 1.15,
+        axisLabel: { ...ax.axisLabel, show: true, formatter: v => '$'+v+'万' },
+        splitLine: { lineStyle: { color: '#F5F3EE', type: 'dashed' } },
+      },
+      yAxis: {
+        type: 'category',
+        data: CHAN_DATA.map(c => c.name),
+        axisLine: { show: false }, axisTick: { show: false },
+        axisLabel: {
+          fontSize: 12, fontWeight: '600',
+          color: ['#059669', '#D97706', '#7C3AED'],
+          rich: {
+            tk:  { color: '#059669', fontWeight: '700', fontSize: 12 },
+            amz: { color: '#D97706', fontWeight: '700', fontSize: 12 },
+            site:{ color: '#7C3AED', fontWeight: '700', fontSize: 12 },
+          },
+          formatter: v => {
+            if(v.includes('TikTok'))  return '{tk|'+v+'}';
+            if(v.includes('亚马逊'))  return '{amz|'+v+'}';
+            return '{site|'+v+'}';
+          }
+        },
+        inverse: true,
+      },
+      series: prodStackSeries,
+    });
+  }
+}
+
+function iProj(){
+  // ── 基础常量 ──
+  const price=79.9, prodCost=17.5, freight=8, lastmile=6;
+  const stages5=['准备阶段','0-1阶段','放量阶段','增长阶段','盈利阶段'];
+  const gmv5=[0,150,210,300,370]; // 万美元，全案框架直取
+  // 广告费直取（万美元）
+  const tkAdv=[0,36,30,36,36], amzAdv=[0,13.3,15,18,18], siteAdv=[0,0,9,0,0];
+  // 达人费直取
+  const seedFee=[0,4,1.2,1.2,1.2], paidFee=[0,14.16,0,0,0];
+  // 内容+运营直取
+  const contFee=[0,9,4.5,4.5,4.5], opsFee=[1,11.4,4.5,4.5,4.5];
+  // 营销成本合计
+  const mkt5=gmv5.map((_,i)=>+(tkAdv[i]+amzAdv[i]+siteAdv[i]+seedFee[i]+paidFee[i]+contFee[i]+opsFee[i]).toFixed(1));
+  // 后端+营销成本计算
+  function backend(gmvW){
+    if(gmvW===0) return {pc:0,hf:0,lm:0,tkP:0,tkK:0,amzP:0,total:0,units:0};
+    const g=gmvW*10000, u=g/price;
+    const pc=+(u*prodCost/10000).toFixed(1);
+    const hf=+(u*freight/10000).toFixed(1);
+    const lm=+(u*lastmile/10000).toFixed(1);
+    const tkP=+(g*0.6*0.06/10000).toFixed(1);
+    const tkK=+(g*0.6*0.06/10000).toFixed(1);
+    const amzP=+(g*0.35*0.15/10000).toFixed(1);
+    return {pc,hf,lm,tkP,tkK,amzP,total:+(pc+hf+lm+tkP+tkK+amzP).toFixed(1),units:Math.round(u)};
+  }
+  const bk5=gmv5.map(g=>backend(g));
+  const profit5=gmv5.map((_,i)=>+(gmv5[i]-bk5[i].total-mkt5[i]).toFixed(1));
+  const margin5=gmv5.map((_,i)=>gmv5[i]>0?+(profit5[i]/gmv5[i]*100).toFixed(1):null);
+
+  // ── ① 瀑布图 ──
+  // 各项名称和值
+  const wfNames=['目标销售额','产品成本','头程仓储','尾程物流','TK平台抽成','TK达人抽成','AMZ抽成','广告投放','达人合作','内容矩阵','人力运营','净利润'];
+  const wfVals=[1030,
+    -bk5.reduce((s,b)=>s+b.pc,0),
+    -bk5.reduce((s,b)=>s+b.hf,0),
+    -bk5.reduce((s,b)=>s+b.lm,0),
+    -bk5.reduce((s,b)=>s+b.tkP,0),
+    -bk5.reduce((s,b)=>s+b.tkK,0),
+    -bk5.reduce((s,b)=>s+b.amzP,0),
+    -(tkAdv.reduce((s,v)=>s+v,0)+amzAdv.reduce((s,v)=>s+v,0)+siteAdv.reduce((s,v)=>s+v,0)),
+    -(seedFee.reduce((s,v)=>s+v,0)+paidFee.reduce((s,v)=>s+v,0)),
+    -contFee.reduce((s,v)=>s+v,0),
+    -opsFee.reduce((s,v)=>s+v,0),
+    0 // 利润动态算
+  ];
+  // 计算累计和base
+  let run=1030;
+  const wfBase=[], wfBar=[], wfColor=[];
+  const colorMap={0:CE.g,11:CE.g};
+  wfVals.forEach((v,i)=>{
+    if(i===0){wfBase.push(0);wfBar.push(1030);wfColor.push(CE.g);}
+    else if(i===11){
+      const final=+run.toFixed(1);
+      wfBase.push(0);wfBar.push(Math.abs(final));
+      wfColor.push(final>=0?CE.g:CE.r);
+      wfVals[11]=final;
+    } else {
+      const abs=Math.abs(v);
+      wfBase.push(+(run-abs).toFixed(1));
+      wfBar.push(+abs.toFixed(1));
+      wfColor.push(i<=6?CE.a:CE.p);
+      run+=v;
+    }
+  });
+  mk('c-pj-waterfall').setOption({backgroundColor:'transparent',
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},...tt,
+      formatter:params=>{
+        const i=params[1]?.dataIndex??params[0].dataIndex;
+        return `${wfNames[i]}<br/><b>${i===0||i===11?'':'−'}$${Math.abs(wfVals[i]).toFixed(1)}万</b>`;
+      }},
+    grid:{left:110,right:160,top:8,bottom:0},
+    // 横向瀑布图：xAxis=value，yAxis=category（inverse）
+    xAxis:{type:'value',axisLabel:{show:false},axisLine:{show:false},axisTick:{show:false},splitLine:{show:false}},
+    yAxis:{type:'category',data:wfNames,inverse:true,
+      axisLine:{show:false},axisTick:{show:false},
+      axisLabel:{fontSize:11,color:'#555',
+        formatter:v=>{
+          const row=wfNames.indexOf(v);
+          if(row===0)  return '{gmv|'+v+'}';
+          if(row===11) return '{pf|'+(wfVals[11]>=0?'净利润':'亏损')+'}';
+          if(row<=6)   return '{bk|'+v+'}';
+          return '{mk|'+v+'}';
+        },
+        rich:{
+          gmv:{color:'#059669',fontWeight:'700',fontSize:12},
+          bk: {color:'#D97706',fontWeight:'600',fontSize:11},
+          mk: {color:'#7C3AED',fontWeight:'600',fontSize:11},
+          pf: {color:wfVals[11]>=0?'#059669':'#DC2626',fontWeight:'700',fontSize:12},
+        }}},
+    series:[
+      // 透明占位条（横向）
+      {type:'bar',stack:'wf',data:wfBase,itemStyle:{color:'transparent'},silent:true},
+      // 实际数据条
+      {type:'bar',stack:'wf',barMaxWidth:32,
+        data:wfBar.map((v,i)=>({
+          value:v,
+          itemStyle:{
+            color:wfColor[i],
+            borderRadius:i===0||i===11?[0,6,6,0]:[0,4,4,0]
+          }
+        })),
+        label:{
+          show:true,
+          position:'right',
+          fontSize:12,
+          fontWeight:'600',
+          color:p=>{
+            const i=p.dataIndex;
+            if(i===0)  return '#059669';
+            if(i===11) return wfVals[11]>=0?'#059669':'#DC2626';
+            if(i<=6)   return '#92400E';
+            return '#4C1D95';
+          },
+          formatter:p=>{
+            const i=p.dataIndex;
+            const v=Math.abs(wfVals[i]);
+            if(i===0)  return '$'+v.toFixed(0)+'万';
+            if(i===11) return (wfVals[11]>=0?'+':'-')+'$'+v.toFixed(0)+'万';
+            return '-$'+v.toFixed(0)+'万';
+          }
+        }}
+    ]});
+
+
+  // ── ② 营销成本 Donut ──
+  mk('c-pj-mkt').setOption({backgroundColor:'transparent',tooltip:{trigger:'item',formatter:'{b}: ${c}万 ({d}%)',...tt},
+    series:[{type:'pie',radius:['50%','76%'],center:['50%','50%'],
+      label:{show:true,color:'#B0ADAA',fontSize:11,formatter:'{b}\n${c}万'},labelLine:{lineStyle:{color:CE.mu}},
+      data:[
+        {value:+(tkAdv.reduce((s,v)=>s+v,0)).toFixed(1),name:'TK广告',itemStyle:{color:CE.g}},
+        {value:+(amzAdv.reduce((s,v)=>s+v,0)).toFixed(1),name:'AMZ广告',itemStyle:{color:CE.a}},
+        {value:+(siteAdv.reduce((s,v)=>s+v,0)).toFixed(1),name:'独立站广告',itemStyle:{color:CE.b}},
+        {value:+(seedFee.reduce((s,v)=>s+v,0)).toFixed(1),name:'种草达人',itemStyle:{color:CE.p}},
+        {value:+(paidFee.reduce((s,v)=>s+v,0)).toFixed(1),name:'带货达人',itemStyle:{color:'#AFA9EC'}},
+        {value:+(contFee.reduce((s,v)=>s+v,0)).toFixed(1),name:'AI内容矩阵',itemStyle:{color:'#5DCAA5'}},
+        {value:+(opsFee.reduce((s,v)=>s+v,0)).toFixed(1),name:'人力运营',itemStyle:{color:CE.mu}},
+      ]}]});
+
+  // ── ③ 各阶段成本+GMV 分组柱图 ──
+  mk('c-pj-cost-stack').setOption({backgroundColor:'transparent',
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},...tt},
+    legend:{top:0,textStyle:{color:'#B0ADAA',fontSize:11}},
+    grid:{left:46,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:stages5},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>v+'万'}},
+    series:[
+      {name:'后端成本',type:'bar',stack:'c',data:bk5.map(b=>b.total),itemStyle:{color:CE.a},barMaxWidth:40},
+      {name:'营销成本',type:'bar',stack:'c',data:mkt5,itemStyle:{color:CE.p,borderRadius:[3,3,0,0]},barMaxWidth:40},
+      {name:'GMV目标',type:'line',data:gmv5,smooth:true,symbol:'circle',symbolSize:8,
+        lineStyle:{color:CE.g,width:2.5},itemStyle:{color:CE.g},
+        label:{show:true,position:'top',fontSize:10,color:CE.g,formatter:p=>p.value?'$'+p.value+'万':'—'}},
+    ]});
+
+  // ── ④ 利润率趋势 ──
+  mk('c-pj-margin').setOption({backgroundColor:'transparent',
+    tooltip:{trigger:'axis',...tt,formatter:p=>{
+      const i=p[0].dataIndex;
+      const pv=profit5[i],mv=margin5[i];
+      return `${stages5[i]}<br/>利润: <b style="color:${pv>=0?CE.g:CE.r}">$${pv}万</b><br/>利润率: <b style="color:${pv>=0?CE.g:CE.r}">${mv!==null?mv+'%':'—'}</b>`;
+    }},
+    grid:{left:50,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:stages5},
+    yAxis:{...ax,type:'value',min:-30,max:50,axisLabel:{...ax.axisLabel,formatter:v=>v+'%'}},
+    series:[{type:'line',smooth:true,symbol:'circle',symbolSize:10,
+      data:margin5.map((v,i)=>({value:v??-100,itemStyle:{color:v===null?CE.mu:v>=0?CE.g:CE.r}})),
+      lineStyle:{color:CE.g,width:2.5},
+      label:{show:true,position:'top',fontSize:11,
+        formatter:p=>{const v=margin5[p.dataIndex];return v!==null?v+'%':'—';},
+        color:'#555'},
+      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(29,158,117,.12)'},{offset:1,color:'rgba(29,158,117,0)'}]}},
+      markLine:{silent:true,symbol:['none','none'],
+        data:[{yAxis:0,lineStyle:{color:CE.r,type:'dashed',width:1.5},
+          label:{formatter:'盈亏平衡线',color:CE.r,fontSize:10,position:'insideStartTop'}}]}
+    }]});
+
+  // ── ⑤ 各阶段明细卡片 ──
+  const stageData=[
+    {name:'准备阶段',period:'1个月',color:'#B0ADAA',gmv:0,bk:bk5[0],mkt:mkt5[0],profit:profit5[0],margin:margin5[0],
+     rows:[
+       {k:'目标销售额',v:'$0',src:'直取',n:'准备期无销售'},
+       {k:'营销成本',v:'$10,000',src:'直取',n:'人力运营初期'},
+       {k:'后端成本',v:'$0',src:'推算',n:'无销量'},
+       {k:'利润',v:'-$10,000',src:'推算',n:'纯投入阶段',red:true},
+     ]},
+    {name:'0-1阶段',period:'6个月',color:CE.g,gmv:150,bk:bk5[1],mkt:mkt5[1],profit:profit5[1],margin:margin5[1],
+     rows:[
+       {k:'目标销售额',v:'$150万',src:'直取',n:'全案框架GMV目标'},
+       {k:'实际销量',v:bk5[1].units.toLocaleString()+'件',src:'推算',n:'$150万÷$79.9'},
+       {k:'TikTok广告',v:'$36万',src:'直取',n:'GMVmax投放6月合计'},
+       {k:'亚马逊广告',v:'$13.3万',src:'直取',n:'6月合计'},
+       {k:'独立站广告',v:'$0',src:'直取',n:'前三月不投放'},
+       {k:'种草达人合作费',v:'$4万',src:'直取',n:'1月集中投入'},
+       {k:'付费带货达人',v:'$14.16万',src:'直取',n:'6月合计'},
+       {k:'AI内容矩阵',v:'$9万',src:'直取',n:'$1.5万/月×6'},
+       {k:'人力运营成本',v:'$11.4万',src:'直取',n:'约$1.9万/月'},
+       {k:'营销成本合计',v:'$'+mkt5[1].toFixed(1)+'万',src:'推算',n:''},
+       {k:'产品成本($17.5/件)',v:'$'+bk5[1].pc.toFixed(1)+'万',src:'推算',n:'销量×$17.5'},
+       {k:'头程仓储($8/件)',v:'$'+bk5[1].hf.toFixed(1)+'万',src:'推算',n:'销量×$8'},
+       {k:'尾程物流($6/件)',v:'$'+bk5[1].lm.toFixed(1)+'万',src:'推算',n:'销量×$6'},
+       {k:'TK平台抽成(6%)',v:'$'+bk5[1].tkP.toFixed(1)+'万',src:'推算',n:'TK销售额×6%'},
+       {k:'TK达人抽成(6%)',v:'$'+bk5[1].tkK.toFixed(1)+'万',src:'推算',n:'TK销售额×6%'},
+       {k:'AMZ平台抽成(15%)',v:'$'+bk5[1].amzP.toFixed(1)+'万',src:'推算',n:'AMZ销售额×15%'},
+       {k:'后端成本合计',v:'$'+bk5[1].total.toFixed(1)+'万',src:'推算',n:'后端各项合计'},
+     ]},
+    {name:'放量阶段',period:'3个月',color:CE.a,gmv:210,bk:bk5[2],mkt:mkt5[2],profit:profit5[2],margin:margin5[2],
+     rows:[
+       {k:'目标销售额',v:'$210万',src:'直取',n:''},
+       {k:'实际销量',v:bk5[2].units.toLocaleString()+'件',src:'推算',n:''},
+       {k:'TikTok广告',v:'$30万',src:'直取',n:'$10万/月×3'},
+       {k:'亚马逊广告',v:'$15万',src:'直取',n:'$5万/月×3'},
+       {k:'独立站广告',v:'$9万',src:'直取',n:'$3万/月×3'},
+       {k:'种草达人合作费',v:'$1.2万',src:'直取',n:''},
+       {k:'AI内容矩阵',v:'$4.5万',src:'直取',n:''},
+       {k:'人力运营成本',v:'$4.5万',src:'直取',n:''},
+       {k:'营销成本合计',v:'$'+mkt5[2].toFixed(1)+'万',src:'推算',n:''},
+       {k:'后端成本合计',v:'$'+bk5[2].total.toFixed(1)+'万',src:'推算',n:''},
+     ]},
+    {name:'增长阶段',period:'3个月',color:CE.p,gmv:300,bk:bk5[3],mkt:mkt5[3],profit:profit5[3],margin:margin5[3],
+     rows:[
+       {k:'目标销售额',v:'$300万',src:'直取',n:''},
+       {k:'实际销量',v:bk5[3].units.toLocaleString()+'件',src:'推算',n:''},
+       {k:'TikTok广告',v:'$36万',src:'直取',n:'$12万/月×3'},
+       {k:'亚马逊广告',v:'$18万',src:'直取',n:'$6万/月×3'},
+       {k:'AI内容矩阵',v:'$4.5万',src:'直取',n:''},
+       {k:'人力运营成本',v:'$4.5万',src:'直取',n:''},
+       {k:'营销成本合计',v:'$'+mkt5[3].toFixed(1)+'万',src:'推算',n:''},
+       {k:'后端成本合计',v:'$'+bk5[3].total.toFixed(1)+'万',src:'推算',n:''},
+     ]},
+    {name:'盈利阶段',period:'3个月',color:CE.b,gmv:370,bk:bk5[4],mkt:mkt5[4],profit:profit5[4],margin:margin5[4],
+     rows:[
+       {k:'目标销售额',v:'$370万',src:'直取',n:''},
+       {k:'实际销量',v:bk5[4].units.toLocaleString()+'件',src:'推算',n:''},
+       {k:'TikTok广告',v:'$36万',src:'直取',n:'$12万/月×3'},
+       {k:'亚马逊广告',v:'$18万',src:'直取',n:'$6万/月×3'},
+       {k:'独立站广告',v:'$9万',src:'直取',n:'$3万/月×3'},
+       {k:'AI内容矩阵',v:'$4.5万',src:'直取',n:''},
+       {k:'人力运营成本',v:'$4.5万',src:'直取',n:''},
+       {k:'营销成本合计',v:'$'+mkt5[4].toFixed(1)+'万',src:'推算',n:''},
+       {k:'后端成本合计',v:'$'+bk5[4].total.toFixed(1)+'万',src:'推算',n:''},
+     ]},
+  ];
+
+  const el=document.getElementById('pj-cards');
+  if(el){
+    el.innerHTML=stageData.map((st,si)=>{
+      const pc=st.profit>=0?'#0F6E56':'#A32D2D';
+      const open=si===1?' open':''; // 0-1阶段默认展开
+      const rows=st.rows.map(r=>`
+        <tr>
+          <td style="padding:6px 10px;font-size:11px;color:#555;border-bottom:0.5px solid #F0EDE8">${r.k}</td>
+          <td style="padding:6px 10px;font-size:12px;font-weight:500;color:${r.red?'#A32D2D':'#1C1C1E'};text-align:right;border-bottom:0.5px solid #F0EDE8;white-space:nowrap">${r.v}</td>
+          <td style="padding:6px 10px;border-bottom:0.5px solid #F0EDE8">${r.src==='直取'?'<span class="src-tag">直取</span>':'<span class="src-tag calc">推算</span>'}</td>
+          <td style="padding:6px 10px;font-size:10px;color:#B0ADAA;border-bottom:0.5px solid #F0EDE8">${r.n}</td>
+        </tr>`).join('');
+      return `
+      <div style="border:0.5px solid #E8E5DE;border-radius:12px;overflow:hidden;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;background:#FAFAF8;cursor:pointer;user-select:none"
+          onclick="const b=this.nextElementSibling;b.classList.toggle('open');this.querySelector('.pj-arr').style.transform=b.classList.contains('open')?'rotate(90deg)':''">
+          <div style="width:8px;height:8px;border-radius:50%;background:${st.color};flex-shrink:0"></div>
+          <span style="font-size:13px;font-weight:600;flex:1">${st.name}</span>
+          <span style="font-size:11px;color:#8A8A8E;margin-right:16px">${st.period}</span>
+          <div style="display:flex;gap:14px;align-items:center">
+            <div style="text-align:right"><div style="font-size:10px;color:#8A8A8E">目标销售额</div><div style="font-size:12px;font-weight:600;color:#1D9E75">${st.gmv?'$'+st.gmv+'万':'—'}</div></div>
+            <div style="text-align:right"><div style="font-size:10px;color:#8A8A8E">后端成本</div><div style="font-size:12px;font-weight:600;color:#854F0B">${st.bk.total?'$'+st.bk.total.toFixed(0)+'万':'—'}</div></div>
+            <div style="text-align:right"><div style="font-size:10px;color:#8A8A8E">营销成本</div><div style="font-size:12px;font-weight:600;color:#7F77DD">$${st.mkt.toFixed(1)}万</div></div>
+            <div style="text-align:right"><div style="font-size:10px;color:#8A8A8E">利润</div><div style="font-size:13px;font-weight:700;color:${pc}">${st.profit>=0?'+':''}$${st.profit.toFixed(0)}万</div></div>
+            <div style="text-align:right"><div style="font-size:10px;color:#8A8A8E">利润率</div><div style="font-size:13px;font-weight:700;color:${pc}">${st.margin!==null?st.margin+'%':'—'}</div></div>
+          </div>
+          <span class="pj-arr" style="font-size:11px;color:#B0ADAA;transition:transform .2s;flex-shrink:0;transform:${si===1?'rotate(90deg)':'rotate(0)'}"">▶</span>
+        </div>
+        <div class="col-body${open}" style="padding:0 18px 12px">
+          <table style="width:100%;border-collapse:collapse;margin-top:8px">
+            <thead><tr>
+              <th style="padding:6px 10px;text-align:left;font-size:10px;color:#8A8A8E;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #E8E5DE;background:#F7F6F2">字段</th>
+              <th style="padding:6px 10px;text-align:right;font-size:10px;color:#8A8A8E;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #E8E5DE;background:#F7F6F2">金额</th>
+              <th style="padding:6px 10px;font-size:10px;color:#8A8A8E;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #E8E5DE;background:#F7F6F2">来源</th>
+              <th style="padding:6px 10px;font-size:10px;color:#8A8A8E;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid #E8E5DE;background:#F7F6F2">说明</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── ⑥ 0-1现金流 ──
+  const cumCost=[],cumGMV=[],cumNet=[];
+  let cc=0,cg=0;
+  M.forEach((_,i)=>{cc+=M_COST[i];cg+=M_GMV[i];cumCost.push(cc);cumGMV.push(cg);cumNet.push(cg-cc);});
+  mk('c-p01-cashflow').setOption({backgroundColor:'transparent',tooltip:{trigger:'axis',...tt},
+    legend:{top:0,textStyle:{color:'#B0ADAA',fontSize:11}},
+    grid:{left:60,right:16,top:30,bottom:28},
+    xAxis:{...ax,type:'category',data:M},
+    yAxis:{...ax,type:'value',axisLabel:{...ax.axisLabel,formatter:v=>'$'+(v/10000).toFixed(0)+'万'}},
+    series:[
+      {name:'累计投入',type:'line',smooth:true,symbol:'none',data:cumCost,lineStyle:{color:CE.r,width:2,type:'dashed'}},
+      {name:'累计GMV',type:'line',smooth:true,symbol:'none',data:cumGMV,lineStyle:{color:CE.a,width:2}},
+      {name:'累计净CF',type:'line',smooth:true,symbol:'circle',symbolSize:6,data:cumNet,
+        lineStyle:{color:CE.g,width:2.5},itemStyle:{color:CE.g},
+        areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(29,158,117,.15)'},{offset:1,color:'rgba(29,158,117,0)'}]}},
+        markPoint:{data:[{name:'亏损峰值',coord:[0,cumNet[0]],symbolSize:46,label:{fontSize:10,color:'#fff'},itemStyle:{color:CE.r}},{name:'盈亏平衡',coord:[3,cumNet[3]],symbolSize:46,label:{fontSize:10,color:'#fff'},itemStyle:{color:CE.g}}]}
+      }
+    ]});
+}
+
+
+// ══ 各阶段财务明细 ══
+const PJ_STAGES=[
+  {name:'准备阶段',period:'1个月',
+   gmv:0, tkGmv:0, amzGmv:0, siteGmv:0,
+   units:0, margin:null,
+   bkItems:[],
+   mktItems:[{k:'人力运营',v:1}],
+   bkTotal:0, mktTotal:1, profit:-1,
+   src:''},
+  {name:'0-1阶段',period:'6个月',
+   gmv:150, tkGmv:90, amzGmv:52.5, siteGmv:7.5,
+   units:18773, margin:-1.7,
+   bkItems:[
+     {k:'产品成本($17.5/件)',v:32.9},
+     {k:'头程仓储($8/件)',v:15.0},
+     {k:'尾程物流($6/件)',v:11.3},
+     {k:'TK平台抽成(6%)',v:5.4},
+     {k:'TK达人抽成(6%)',v:5.4},
+     {k:'AMZ平台抽成(15%)',v:9.7}
+   ],
+   mktItems:[
+     {k:'TK广告投放',v:36},
+     {k:'AMZ广告投放',v:13.3},
+     {k:'种草达人合作费',v:4},
+     {k:'付费带货达人',v:14.16},
+     {k:'AI内容矩阵',v:9},
+     {k:'人力运营',v:11.4}
+   ],
+   bkTotal:79.7, mktTotal:87.86, profit:-17.56,
+   src:''},
+  {name:'放量阶段',period:'3个月',
+   gmv:210, tkGmv:126, amzGmv:73.5, siteGmv:10.5,
+   units:26283, margin:21.6,
+   bkItems:[
+     {k:'产品成本($17.5/件)',v:46.0},
+     {k:'头程仓储($8/件)',v:21.0},
+     {k:'尾程物流($6/件)',v:15.8},
+     {k:'TK平台抽成(6%)',v:7.6},
+     {k:'TK达人抽成(6%)',v:7.6},
+     {k:'AMZ平台抽成(15%)',v:11.0}
+   ],
+   mktItems:[
+     {k:'TK广告投放',v:30},
+     {k:'AMZ广告投放',v:15},
+     {k:'独立站广告',v:9},
+     {k:'种草达人合作费',v:1.2},
+     {k:'AI内容矩阵',v:4.5},
+     {k:'人力运营',v:4.5}
+   ],
+   bkTotal:109.0, mktTotal:64.2, profit:36.8,
+   src:''},
+  {name:'增长阶段',period:'3个月',
+   gmv:300, tkGmv:180, amzGmv:105, siteGmv:15,
+   units:37547, margin:30.4,
+   bkItems:[
+     {k:'产品成本($17.5/件)',v:65.7},
+     {k:'头程仓储($8/件)',v:30.0},
+     {k:'尾程物流($6/件)',v:22.5},
+     {k:'TK平台抽成(6%)',v:10.8},
+     {k:'TK达人抽成(6%)',v:10.8},
+     {k:'AMZ平台抽成(15%)',v:15.7}
+   ],
+   mktItems:[
+     {k:'TK广告投放',v:36},
+     {k:'AMZ广告投放',v:18},
+     {k:'种草达人合作费',v:1.2},
+     {k:'AI内容矩阵',v:4.5},
+     {k:'人力运营',v:4.5}
+   ],
+   bkTotal:155.5, mktTotal:64.2, profit:80.3,
+   src:''},
+  {name:'盈利阶段',period:'3个月',
+   gmv:370, tkGmv:222, amzGmv:129.5, siteGmv:18.5,
+   units:46308, margin:34.9,
+   bkItems:[
+     {k:'产品成本($17.5/件)',v:81.0},
+     {k:'头程仓储($8/件)',v:37.0},
+     {k:'尾程物流($6/件)',v:27.8},
+     {k:'TK平台抽成(6%)',v:13.3},
+     {k:'TK达人抽成(6%)',v:13.3},
+     {k:'AMZ平台抽成(15%)',v:19.4}
+   ],
+   mktItems:[
+     {k:'TK广告投放',v:36},
+     {k:'AMZ广告投放',v:18},
+     {k:'独立站广告',v:9},
+     {k:'种草达人合作费',v:1.2},
+     {k:'AI内容矩阵',v:4.5},
+     {k:'人力运营',v:4.5}
+   ],
+   bkTotal:191.8, mktTotal:73.2, profit:104.9,
+   src:''},
+];
+
+let curPjTab=1;
+
+function swPjTab(idx,btn){
+  document.querySelectorAll('.pj-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  curPjTab=idx;
+  renderPjStage(idx);
+}
+
+function renderPjStage(idx){
+  const st = PJ_STAGES[idx];
+  const profitPos = st.profit >= 0;
+  const PC  = profitPos ? '#059669' : '#DC2626';
+  const C_BK_H = '#D97706', C_MK_H = '#7C3AED', C_GMV = '#059669';
+  const BK_PAL = ['#FB923C','#FCA5A5','#FCD34D','#FDBA74','#FDE68A','#F97316'];
+  const MK_PAL = ['#818CF8','#A78BFA','#C4B5FD','#7C3AED','#8B5CF6','#DDD6FE'];
+
+  // 左侧卡片更新
+  const g = id => document.getElementById(id);
+  const set = (id,txt,col) => { const e=g(id); if(e){e.textContent=txt; if(col) e.style.color=col;} };
+  set('pj-kpi-gmv',  st.gmv ? '$'+st.gmv+'万' : '$0');
+  // pj-kpi-units removed
+  set('pj-kpi-bk',   st.bkTotal ? '$'+st.bkTotal.toFixed(1)+'万' : '$0');
+  set('pj-kpi-bk-pct', st.gmv ? '占销售额 '+(st.bkTotal/st.gmv*100).toFixed(1)+'%' : '—');
+  set('pj-kpi-mkt',  '$'+st.mktTotal.toFixed(1)+'万');
+  set('pj-kpi-mkt-pct', st.gmv ? '占销售额 '+(st.mktTotal/st.gmv*100).toFixed(1)+'%' : '—');
+  set('pj-kpi-profit', (profitPos?'+':'')+'$'+st.profit.toFixed(1)+'万', PC);
+  set('pj-kpi-margin', '利润率 '+(st.margin!==null ? st.margin+'%' : '—'), PC);
+  const card = g('pj-profit-card');
+  if(card){ card.style.background=profitPos?'#ECFDF5':'#FEF2F2'; card.style.border='1.5px solid '+(profitPos?'#6EE7B7':'#FECACA'); }
+  if(g('pj-kpi-bk-items'))  g('pj-kpi-bk-items').innerHTML  = st.bkItems.filter(b=>b.v>0).map(b=>`<span class="pj-mini" style="background:#FEF3D9;color:#633806">${b.k}</span>`).join('');
+  if(g('pj-kpi-mkt-items')) g('pj-kpi-mkt-items').innerHTML = st.mktItems.map(m=>`<span class="pj-mini" style="background:#EFEEFD;color:#3C3489">${m.k}</span>`).join('');
+  if(g('pj-chart-title')) g('pj-chart-title').textContent = st.name+' · 收入—成本—利润完整分解';
+  if(g('pj-chart-src'))   g('pj-chart-src').textContent   = '';
+
+  // 右侧图表
+  const el = g('c-pj-stage-bar');
+  if(!el) return;
+  const ex = echarts.getInstanceByDom(el);
+  if(ex) ex.dispose();
+
+  // ── 构建行列表 ──────────────────────────────────────
+  // 每行：{name, val, color, bw(barWidth), lc(labelColor), ls(labelSuffix), bold, type}
+  // type: 'gmv'|'bk'|'mk'|'profit'|'detail'|'sep'
+  const rows = [];
+  const sep = () => rows.push({name:'', val:0, color:'transparent', bw:4, ls:'', type:'sep'});
+
+  if(st.gmv > 0){
+    rows.push({name:'线上目标销售额', val:st.gmv, color:'rgba(5,150,105,.22)', bw:22,
+               lc:C_GMV, ls:' $'+st.gmv+'万', bold:true, type:'gmv'});
+    if(st.tkGmv)   rows.push({name:'  └ TikTok销售额',  val:st.tkGmv,  color:'#34D399', bw:14, lc:'#059669', ls:' $'+st.tkGmv+'万  (60%)', type:'detail'});
+    if(st.amzGmv)  rows.push({name:'  └ 亚马逊销售额',  val:st.amzGmv, color:'#FBBF24', bw:14, lc:'#92400E', ls:' $'+st.amzGmv+'万  (35%)', type:'detail'});
+    if(st.siteGmv) rows.push({name:'  └ 独立站销售额',  val:st.siteGmv,color:'#818CF8', bw:14, lc:'#3730A3', ls:' $'+st.siteGmv+'万  (5%)', type:'detail'});
+    sep();
+  }
+
+  if(st.bkTotal > 0){
+    const pct = st.gmv ? ' ('+(st.bkTotal/st.gmv*100).toFixed(1)+'%)' : '';
+    rows.push({name:'后端成本合计', val:st.bkTotal, color:C_BK_H, bw:22,
+               lc:C_BK_H, ls:' $'+st.bkTotal.toFixed(1)+'万'+pct, bold:true, type:'bk'});
+    st.bkItems.filter(b=>b.v>0).forEach((b,i)=>{
+      rows.push({name:'  └ '+b.k, val:b.v, color:BK_PAL[i%6], bw:14,
+                 lc:'#92400E', ls:' $'+b.v+'万', type:'detail'});
+    });
+    sep();
+  }
+
+  const mktPct = st.gmv ? ' ('+(st.mktTotal/st.gmv*100).toFixed(1)+'%)' : '';
+  rows.push({name:'营销成本合计', val:st.mktTotal, color:C_MK_H, bw:22,
+             lc:C_MK_H, ls:' $'+st.mktTotal.toFixed(1)+'万'+mktPct, bold:true, type:'mk'});
+  st.mktItems.forEach((m,i)=>{
+    rows.push({name:'  └ '+m.k, val:m.v, color:MK_PAL[i%6], bw:14,
+               lc:'#4C1D95', ls:' $'+m.v+'万', type:'detail'});
+  });
+  sep();
+
+  const profSuffix = ' '+(profitPos?'+ ':'- ')+'$'+Math.abs(st.profit).toFixed(1)+'万    利润率 '+(st.margin!==null?st.margin+'%':'—');
+  rows.push({name: profitPos?'净利润':'亏损', val:Math.abs(st.profit)||0.1,
+             color:PC, bw:26, lc:PC, ls:profSuffix, bold:true, type:'profit'});
+
+  // ── ECharts：用自定义 barMaxWidth per item ──────────
+  // 核心技巧：一个 series，data 每项用 itemStyle + label 独立设置
+  const yNames = rows.map(r => r.name);
+  const maxX   = st.gmv > 0 ? st.gmv * 1.15 : (st.mktTotal * 1.5);
+
+  const data = rows.map(r => ({
+    value: r.type === 'sep' ? 0 : r.val,
+    // 每行单独的 itemStyle
+    itemStyle: {
+      color: r.color,
+      borderRadius: r.val > 0 ? [0,4,4,0] : 0,
+    },
+    // 每行单独的 label
+    label: {
+      show: r.val > 0 && r.type !== 'sep',
+      position: 'right',
+      color: r.lc || '#555',
+      fontSize: r.bold ? 13 : 11,
+      fontWeight: r.bold ? '700' : '400',
+      formatter: () => r.ls || '',
+    },
+  }));
+
+  // barWidth per item 通过 barMaxWidth series 级别 + 用 barGap 分层无法做到
+  // 改用多 series（每行一个）但只让对应行有值，关键：其余行设 value:null（不是0）
+  // null 值 ECharts 不渲染条也不渲染 label
+  const seriesList = rows.map((row, ri) => ({
+    type: 'bar',
+    barWidth: row.bw,
+    barGap: '-100%',  // 叠加但各自占自己的行
+    data: rows.map((_, ji) => ji === ri
+      ? { value: row.type==='sep' ? null : (row.val||null),
+          itemStyle:{ color:row.color, borderRadius: row.val>0?[0,4,4,0]:0 },
+          label:{
+            show: row.val > 0 && row.type !== 'sep',
+            position:'right',
+            color: row.lc||'#555',
+            fontSize: row.bold ? 13 : 11,
+            fontWeight: row.bold ? '700' : '400',
+            formatter: () => row.ls||'',
+          }}
+      : null  // null = 不渲染
+    ),
+    silent: row.type === 'sep',
+    z: row.type==='profit' ? 10 : row.bold ? 5 : 3,
+  }));
+
+  // 销售额参考虚线 series（scatter trick）
+  if(st.gmv > 0){
+    seriesList.push({
+      type:'scatter', data:[], silent:true,
+      markLine:{
+        symbol:['none','none'], silent:true,
+        data:[{xAxis: st.gmv,
+          lineStyle:{color:'#059669', type:'dashed', width:1.5, opacity:.4},
+          label:{show:false}
+        }]
+      }
+    });
+  }
+
+  const c = echarts.init(el, null, {renderer:'canvas'});
+  c.setOption({
+    backgroundColor:'transparent',
+    tooltip:{
+      trigger:'axis', axisPointer:{type:'shadow'}, ...tt,
+      formatter: params => {
+        // 找到有值的那个 series
+        const p = params.find(p => p.value !== null && p.value !== undefined && p.value > 0);
+        if(!p) return '';
+        const row = rows[p.dataIndex];
+        return row ? `<b>${row.name.trim()}</b><br/>$${row.val}万` : '';
+      }
+    },
+    grid:{ left:170, right:220, top:8, bottom:8, containLabel:false },
+    xAxis:{
+      ...ax, type:'value', max:maxX,
+      axisLabel:{...ax.axisLabel, formatter: v => v ? '$'+v+'万' : ''},
+      splitLine:{lineStyle:{color:'#F5F3EE', type:'dashed'}},
+    },
+    yAxis:{
+      type:'category', data:yNames,
+      inverse:true,
+      axisLine:{show:false}, axisTick:{show:false},
+      axisLabel:{
+        fontSize:11, color:'#555',
+        formatter: v => {
+          if(!v || !v.trim()) return '';
+          const row = rows.find(r => r.name === v);
+          if(!row) return v;
+          if(row.type==='gmv')    return '{gmv|'+v.trim()+'}';
+          if(row.type==='bk')     return '{bk|'+v.trim()+'}';
+          if(row.type==='mk')     return '{mk|'+v.trim()+'}';
+          if(row.type==='profit') return '{pf|'+v.trim()+'}';
+          return v;
+        },
+        rich:{
+          gmv:{color:'#059669', fontWeight:'700', fontSize:12},
+          bk: {color:'#D97706', fontWeight:'700', fontSize:12},
+          mk: {color:'#7C3AED', fontWeight:'700', fontSize:12},
+          pf: {color:PC,        fontWeight:'700', fontSize:14},
+        }
+      },
+    },
+    series: seriesList,
+  });
+}
+
+// iProj 完成后初始化默认阶段（0-1阶段）
+const _iProjOrig=iProj;
+iProj=function(){
+  _iProjOrig();
+  // 等浏览器完成布局再渲染
+  setTimeout(function(){
+    document.querySelectorAll('.pj-tab').forEach((b,i)=>b.classList.toggle('on',i===1));
+    renderPjStage(1);
+  },100);
+};
+
+
+// ══ 月度拆解数据 & 切换 ══
+const MO_EX = [
+  {budget:'$152,000', gmvOut:'GMV产出$65,000+', profit:'亏损', goal:'核心目标：达人合作模型、内容转化模型、广告产出模型',
+   tasks:[
+     '背书内容：PR报道、垂直社区论坛、产品发布会、背书资质、检测机构、用户评论等（暂不做预算，待协商配合）',
+     '达人种草：TikTok头部达人种草合作20+，头部博主、均播1M+、符合产品调性、粉丝粘性高、内容配合度高、意见领袖类型、对品牌认可度高，均价约$2000/个',
+     '付费带货博主：TikTok付费带货达人合作120个左右，均播10K+或月GMV10k+，内容配合度高，个人表现力好；均价300美元/个（严格控制出单率）',
+     '纯佣带货博主：TikTok纯佣带货达人合作50个左右，均播2k+或月GMV5k+，内容配合度高，个人表现力好，均价20美元/个',
+     '社媒运营：以YTB+TK+INS平台为主，官号日更，内容贴吧等社区以种草为主（Reddit）',
+     '内容矩阵：实拍视频+AI视频+矩阵账号分发，单号日更3-5条，优质广告素材5-10条/天（日均50条视频+）',
+     'GMVMAX投放：以达人视频+自制素材投放为主，日消耗预估在$1000左右，ROI控制在1.7左右',
+     '亚马逊投放：亚马逊维持正常运营，优化链接，少量投放测试，投放费用$10000/月，ROI控制在1.5左右',
+     '独立站投放：承接外溢流量，暂不投放',
+     '项目运营：Token成本、运营成本、人力成本（达人建联合作、内容制作、社媒账号运营、产品上下架、主图详情图、后台客服、日常发货、海外库存管理等托管服务）',
+   ]},
+  {budget:'$118,200', gmvOut:'GMV产出$100,000+', profit:'亏损', goal:'核心目标：达人合作模型、内容转化模型、广告产出模型',
+   tasks:['付费带货博主：100个×$300，均播10K+，内容配合度高',
+          '纯佣带货博主：60个×$20，均播2k+',
+          '社媒运营：YTB+TK+INS官号日更，Reddit社区种草',
+          '内容矩阵：实拍+AI视频，日均50条视频+',
+          'GMVmax投放：日消耗$1500，ROI控制2.0',
+          '亚马逊投放：$12000/月，ROI控制1.8',
+          '项目运营：$20000/月']},
+  {budget:'$135,400', gmvOut:'GMV产出$170,000+', profit:'亏损', goal:'核心目标：达人合作模型、内容转化模型、广告产出模型',
+   tasks:['付费带货博主：80个×$300，均播10K+',
+          '纯佣带货博主：120个×$20，均播2k+',
+          '内容矩阵：实拍+AI视频，日均50条视频+',
+          'GMVmax投放：日消耗$1800，ROI控制2.5+',
+          '亚马逊投放：$20000/月，ROI控制2.0+',
+          '项目运营：$20000/月']},
+  {budget:'$142,000', gmvOut:'GMV达到$260,000+', profit:'盈亏平衡', goal:'产出目标：盈亏平衡',
+   tasks:['付费带货博主：60个×$300，均播10K+',
+          '纯佣带货博主：150个，纯佣无预算',
+          '社媒运营：$3000/月',
+          '内容矩阵：$15000/月',
+          'GMVmax投放：日消耗$2200，ROI控制3+',
+          '亚马逊投放：$25000/月，ROI控制2.5+',
+          '项目运营：$18000/月']},
+  {budget:'$156,000', gmvOut:'GMV达到$370,000+', profit:'盈利', goal:'产出目标：盈利',
+   tasks:['付费带货博主：30个×$300',
+          '纯佣带货博主：200个×$20',
+          '内容矩阵：$15000/月',
+          'GMVmax投放：日消耗$3000，ROI控制3.5+',
+          '亚马逊投放：$30000/月，ROI控制3.0',
+          '独立站：少量投放$10000/月，严控ROI',
+          '项目运营：$18000/月']},
+  {budget:'$172,000', gmvOut:'GMV达到$490,000+', profit:'盈利', goal:'产出目标：盈利',
+   tasks:['付费带货博主：30个×$300',
+          '纯佣带货博主：200个×$20',
+          '内容矩阵：$15000/月',
+          'GMVmax投放：日消耗$3000，ROI控制4.0+',
+          '亚马逊投放：$36000/月，ROI控制3.5',
+          '独立站：少量投放$10000/月，严控ROI',
+          '项目运营：$18000/月']},
+];
+
+let curMo = 0;
+const MO_COLORS = ['#E24B4A','#BA7517','#1D9E75','#1D9E75','#378ADD','#378ADD'];
+
+function swMo(i, elBtn) {
+  curMo = i;
+  document.querySelectorAll('#mo-track .tl-item').forEach((it,idx)=>{
+    it.classList.toggle('cur', idx===i);
+    const icon = it.querySelector('.tl-icon');
+    if(icon){
+      icon.style.background = idx===i ? MO_COLORS[idx] : '#E8E5DE';
+      icon.style.color = idx===i ? '#fff' : '#555';
+    }
+  });
+  renderMoView(i);
+}
+
+function renderMoView(i) {
+  const d = MO_EX[i];
+  const profC = d.profit==='盈利'?CE.g : d.profit==='盈亏平衡'?CE.a : CE.r;
+  const xd = document.getElementById('mo-xd');
+  const xt = document.getElementById('mo-xt');
+  const ex = document.getElementById('mo-expand');
+  if(!xd||!xt) return;
+  xd.innerHTML =
+    `<div><div class="exp-lbl">预算</div><div class="exp-val" style="color:${CE.g}">${d.budget}</div></div>`+
+    `<div><div class="exp-lbl">产出目标</div><div class="exp-val" style="color:${CE.a}">${d.gmvOut}</div></div>`+
+    `<div><div class="exp-lbl">盈利目标</div><div class="exp-val" style="color:${profC}">${d.profit}</div></div>`+
+    `<div style="grid-column:span 2"><div class="exp-lbl">核心目标</div><div class="exp-val" style="color:${CE.p};font-size:11px">${d.goal}</div></div>`;
+  xt.innerHTML = d.tasks.map(t=>{
+    const col=t.indexOf('：');
+    if(col>-1){
+      const lb=t.slice(0,col+1), det=t.slice(col+1);
+      return `<div class="tl-task-row"><span class="tl-task-label">${lb}</span><span class="tl-task-detail">${det}</span></div>`;
+    }
+    return `<div class="tl-task-row"><span class="tl-task-detail">${t}</span></div>`;
+  }).join('');
+  if(ex) ex.classList.add('show');
+}
+
+
+// ══ 准备阶段数据 ══
+const PREP_TASKS = [
+  {k:'调研分析', v:'市场、人群、竞品、打法（基础调研）'},
+  {k:'产品调研', v:'选取200-300垂类达人，做详细的调研验证产品可行性'},
+  {k:'品牌定位', v:'品牌定位项目交付计划（产品方向）'},
+  {k:'团队搭建', v:'运营团队+内容团队+投放团队+客服售后'},
+  {k:'社媒搭建', v:'TikTok+INS+FB+YTB+Reddit，搭建官方账号及渠道矩阵号'},
+  {k:'独立站搭建', v:'网站域名+注册资料包+宣发资料包+产品资料包+视觉设计+广告搭建+产品上架及优化+SEO/AEO/GEO'},
+  {k:'亚马逊搭建', v:'美区主体+注册资料包+UBO信息+收款账户+商标信息+月租信用卡+店铺申请+产品上架+全面优化'},
+  {k:'TikTok店铺', v:'美区主体+注册资料包+UBO信息+收款信息+商标信息+店铺申请+产品上架+全面优化'},
+  {k:'仓储物流搭建', v:'头程+仓库+尾程+ERP发货及库存管理系统搭建'},
+  {k:'营销执行策划', v:'运营策略方案+社媒内容执行方案+达人内容策划方案+自制内容策划方案+广告投放执行方案'},
+];
+
+function iPrep(){
+  const el = document.getElementById('prep-tasks');
+  if(!el) return;
+  el.innerHTML = PREP_TASKS.map(t =>
+    `<div class="tl-task-row">
+      <span class="tl-task-label">${t.k}：</span>
+      <span class="tl-task-detail">${t.v}</span>
+    </div>`
+  ).join('');
+}
+
+document.addEventListener('DOMContentLoaded',()=>iTab('fw'));
+</script>
+
+</body>
+</html>
